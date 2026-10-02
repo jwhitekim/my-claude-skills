@@ -1,0 +1,37 @@
+[
+  {
+    "skills": [
+      "change-impact",
+      "migration-guard"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "supabase/migrations/에 새 .sql 파일이 추가됐고 DROP COLUMN 문이 포함됨",
+    "expected_behavior": [
+      "change-impact가 migration-guard의 check.sh staged를 실행한다",
+      "DROP COLUMN을 destructive로 알린다",
+      "아무것도 막지 않고 판단은 사용자에게 맡긴다"
+    ]
+  },
+  {
+    "skills": [
+      "migration-guard"
+    ],
+    "query": "마이그레이션 파일 위험한 거 없나 봐줘",
+    "state": "이미 커밋된 마이그레이션 파일(지난주 작성)을 방금 수정함",
+    "expected_behavior": [
+      "check.sh를 실행해 기존 마이그레이션 수정을 감지한다",
+      "이미 적용된 환경에는 반영되지 않는다는 점을 알리고 새 마이그레이션 파일 추가를 권한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact",
+      "migration-guard"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "migrations/ 폴더가 없는 프로젝트",
+    "expected_behavior": [
+      "change-impact가 마이그레이션 변경이 없다고 판단해 migration-guard를 호출하지 않는다"
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "skills": ["incident-review"],
+    "query": "어제 밤 12시쯤 배포 터진 거 회고 써줘",
+    "state": "GitHub Actions 배포가 여러 번 실패하다 마지막에 성공한 기록이 있는 프로젝트",
+    "expected_behavior": [
+      "collect.sh를 장애 시각 기준으로 실행해 커밋, Actions 실행, 실패 로그를 모은다",
+      "docs/incidents/YYYY-MM-DD-<제목>.md에 양식대로 타임라인·원인 분석·액션 아이템을 쓴다",
+      "로그로 확인된 원인과 추측을 구분하고, 사람을 탓하지 않는다"
+    ]
+  },
+  {
+    "skills": ["incident-review"],
+    "query": "서비스가 좀 이상했는데 정리해줘",
+    "state": "장애 시각을 말하지 않음",
+    "expected_behavior": [
+      "마지막으로 정상이던 때와 이상을 발견한 때를 먼저 묻는다",
+      "서버 런타임 로그가 있으면 붙여넣어 달라고 한다"
+    ]
+  },
+  {
+    "skills": ["incident-review"],
+    "query": "장애 회고 써줘",
+    "state": "gh CLI 로그인이 안 된 환경",
+    "expected_behavior": [
+      "collect.sh가 Actions 부분을 건너뛰어도 커밋 기록만으로 회고를 진행한다",
+      "Actions 기록이 빠졌다는 점을 문서나 답변에 밝힌다"
+    ]
+  }
+]

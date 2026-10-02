@@ -1,0 +1,31 @@
+[
+  {
+    "skills": ["trim-rules"],
+    "query": "watch-rules 훅이 .claude/rules/architecture.md가 210줄이라고 경고했어요, 정리해주세요",
+    "state": "프로젝트에 .claude/rules/ 디렉터리가 있고 그 중 architecture.md 하나만 임계값을 넘음",
+    "expected_behavior": [
+      ".claude/rules/architecture.md를 정리 대상으로 판단한다(다른 rules/ 파일은 건드리지 않음)",
+      "그 파일 하나를 더 작은 주제로 다시 쪼갤지, 배경 설명을 docs/로 옮길지 계획을 제시한다",
+      "실제로 파일을 고치기 전에 계획을 보여주고 승인을 받는다"
+    ]
+  },
+  {
+    "skills": ["trim-rules"],
+    "query": "CLAUDE.md가 300줄 넘게 너무 길어요, 정리 좀 해주세요",
+    "state": "프로젝트에 .claude/rules/ 디렉터리는 없고 루트 CLAUDE.md 단일 파일만 있음",
+    "expected_behavior": [
+      ".claude/rules/로 주제별 분리(공식 권장 방식)와 docs/로 배경 설명만 빼는 방식 중 어느 쪽이 이 프로젝트에 맞는지 판단하거나 사용자에게 묻는다",
+      "커밋 자동화 같은 마커(<!-- begin/end -->)가 포함된 블록이 있으면 마커를 유지한 채로 옮긴다",
+      "실제로 파일을 고치기 전에 계획을 보여주고 승인을 받는다"
+    ]
+  },
+  {
+    "skills": ["trim-rules"],
+    "query": ".claude/rules/architecture.md에 '.env는 절대 커밋하지 않는다'는 규칙 추가해줘",
+    "state": "프로젝트에 .claude/rules/ 디렉터리가 있음",
+    "expected_behavior": [
+      "이건 정리(trim) 요청이 아니라 추가 요청이므로 trim-rules를 트리거하지 않는다",
+      "대신 record-lesson 스킬 절차(문구 확인 후 승인받고 추가)를 따른다"
+    ]
+  }
+]

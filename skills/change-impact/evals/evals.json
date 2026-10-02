@@ -1,0 +1,29 @@
+[
+  {
+    "skills": ["change-impact"],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "staged에 소스 파일, package-lock.json, supabase 마이그레이션이 함께 있음",
+    "expected_behavior": [
+      "scripts/impact.sh를 실행한다",
+      "영향 범위 요약(소스/의존성/DB마이그레이션)을 보여주고, 가드별로 걸린 항목을 섹션으로 정리한다",
+      "후속 조치는 각 가드 스킬의 지침을 따르고, 아무것도 막지 않는다"
+    ]
+  },
+  {
+    "skills": ["change-impact"],
+    "query": "영향 범위 확인해줘",
+    "state": "아무것도 staged 안 됐고, 방금 커밋을 하나 함",
+    "expected_behavior": [
+      "impact.sh가 staged 변경 없음을 알리면 impact.sh last로 마지막 커밋을 확인한다"
+    ]
+  },
+  {
+    "skills": ["commit-and-push"],
+    "query": "커밋해줘",
+    "state": "staged에 로직 변경과 lockfile 변경이 있음",
+    "expected_behavior": [
+      "commit-and-push는 change-impact나 가드 스킬을 자동으로 부르지 않는다",
+      "commit-and-push 자체 절차(검증, staged 검토, 커밋)만 진행한다"
+    ]
+  }
+]

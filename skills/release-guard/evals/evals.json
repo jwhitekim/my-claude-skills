@@ -1,0 +1,31 @@
+[
+  {
+    "skills": ["release-guard"],
+    "query": "이 프로젝트에 release-guard 깔아줘",
+    "state": "git 저장소, pre-push 훅 없음",
+    "expected_behavior": [
+      "scripts/setup.sh를 실행해 pre-push 훅을 설치한다",
+      "기존 pre-push 훅이 있으면 덮어쓰지 않고 수동 안내만 한다",
+      "일반 브랜치 푸시에는 영향이 없다는 점을 설명한다"
+    ]
+  },
+  {
+    "skills": ["release-guard"],
+    "query": "버전 올리고 릴리즈 준비해줘",
+    "state": "release-guard 설치됨, 마지막 태그 이후 커밋 몇 개 쌓임",
+    "expected_behavior": [
+      "git log <마지막태그>..HEAD로 변경 내역을 보고 patch/minor/major를 스스로 판단해 제안한다",
+      "커밋과 태그가 생긴다는 점을 사용자에게 확인받은 뒤 bump-version.sh를 실행한다",
+      "실행 후 푸시는 자동으로 하지 않고 사용자에게 맡긴다"
+    ]
+  },
+  {
+    "skills": ["release-guard"],
+    "query": "git push --tags 했는데 막혔어, 왜 이래?",
+    "state": "release-guard pre-push 훅이 설치되어 있고, 버전 파일과 태그 버전이 다르거나 CHANGELOG 항목이 없어서 푸시가 차단된 상태",
+    "expected_behavior": [
+      "release-guard의 pre-push 체크리스트 중 무엇이 실패했는지 훅 출력 메시지를 확인하고 설명한다",
+      "버전 파일/CHANGELOG.md를 고치도록 제안하거나, 급하면 --no-verify로 우회할 수 있다고 알린다"
+    ]
+  }
+]

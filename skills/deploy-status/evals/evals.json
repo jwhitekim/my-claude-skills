@@ -1,0 +1,31 @@
+[
+  {
+    "skills": ["deploy-status"],
+    "query": "방금 푸시한 거 배포 잘 됐는지 확인해줘",
+    "state": "프로젝트에 .github/workflows/deploy.yml이 있고, 방금 main에 푸시함",
+    "expected_behavior": [
+      "gh run list로 방금 커밋(headSha)에 해당하는 워크플로 실행을 찾는다",
+      "완료까지 기다리거나(gh run watch) 상태를 폴링한다",
+      "성공/실패 여부와 근거(워크플로 이름, 소요시간 등)를 보고한다"
+    ]
+  },
+  {
+    "skills": ["deploy-status"],
+    "query": "배포가 실패했다고 알림이 왔는데 왜 그런지 봐줄 수 있어?",
+    "state": "gh run list 결과 conclusion이 failure인 최근 실행이 있음",
+    "expected_behavior": [
+      "gh run view --log-failed로 실패한 job의 로그만 읽는다",
+      "전체 로그를 다 훑지 않는다",
+      "원인을 특정해 수정안을 제시하고, 사람 승인 없이 바로 코드/워크플로를 고치지 않는다",
+      "원인 불명확 시 무작정 gh run rerun부터 하지 않는다"
+    ]
+  },
+  {
+    "skills": ["deploy-status"],
+    "query": "이 커밋 되돌리고 싶어",
+    "state": "프로젝트에 .github/workflows/deploy.yml이 있음",
+    "expected_behavior": [
+      "이건 배포 상태 확인 요청이 아니라 revert 요청이므로 deploy-status를 트리거하지 않는다"
+    ]
+  }
+]

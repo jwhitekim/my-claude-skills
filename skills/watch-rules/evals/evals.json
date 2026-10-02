@@ -1,0 +1,31 @@
+[
+  {
+    "skills": ["watch-rules"],
+    "query": "이 프로젝트에도 규칙 파일 길이 체크 훅 설치해줘",
+    "state": "새 프로젝트, 아직 .claude/hooks/watch-rules.sh 없음",
+    "expected_behavior": [
+      "scripts/setup.sh를 실행해 훅 껍데기와 settings.json 등록을 설치한다",
+      "settings.json의 다른 훅/설정은 건드리지 않는다",
+      "세션 재시작이 필요하다는 점을 알린다"
+    ]
+  },
+  {
+    "skills": ["watch-rules"],
+    "query": "trim-rules가 있는지도 모르고 지나칠 것 같아요, 자동으로 알림 받을 방법 없나요?",
+    "state": "프로젝트에 .claude/rules/ 디렉터리가 있고 아직 이 훅이 설치되지 않음",
+    "expected_behavior": [
+      "watch-rules 스킬을 트리거한다",
+      "훅 설치를 제안하고, 동의하면 setup.sh를 실행한다",
+      ".claude/rules/ 디렉터리가 있으면 그 안 파일 각각을 개별 검사 대상으로 설명한다"
+    ]
+  },
+  {
+    "skills": ["watch-rules"],
+    "query": "RULES.md 내용 좀 줄여줘",
+    "state": "프로젝트에 .claude/RULES.md(비표준 이름)가 200줄 넘게 있음",
+    "expected_behavior": [
+      "이건 훅 설치 요청이 아니라 정리 요청이므로 watch-rules가 아니라 trim-rules를 트리거한다",
+      "watch-rules를 실행하게 된다면, .claude/RULES.md가 Claude Code의 자동 로드 대상이 아니라는 점도 함께 짚는다"
+    ]
+  }
+]

@@ -1,0 +1,31 @@
+[
+  {
+    "skills": ["repo-health"],
+    "query": "이 프로젝트 저장소 건강검진 좀 해줘",
+    "state": "git 저장소, 아직 .claude/hooks/repo-health.sh 없음",
+    "expected_behavior": [
+      "scripts/setup.sh를 실행해 훅 껍데기와 settings.json 등록을 설치한다",
+      "settings.json의 다른 훅/설정은 건드리지 않는다",
+      "세션 재시작이 필요하다는 점을 알린다"
+    ]
+  },
+  {
+    "skills": ["repo-health"],
+    "query": "repo-health 상세 결과 보여줘",
+    "state": "repo-health가 이미 설치되어 있고 세션 시작 시 요약 알림이 떴음",
+    "expected_behavior": [
+      "bash ~/.claude/skills/repo-health/scripts/scan.sh detail을 실행해 전체 목록을 보여준다",
+      "dead-symbols 결과는 오탐 가능성이 있다는 점을 같이 알린다"
+    ]
+  },
+  {
+    "skills": ["repo-health"],
+    "query": "방금 repo-health가 찾은 참조 없는 함수들 다 지워줘",
+    "state": "dead-symbols.sh가 몇 개의 함수 후보를 보고한 상태",
+    "expected_behavior": [
+      "바로 삭제하지 않는다",
+      "각 함수의 실제 호출부가 없는지 해당 파일을 열어 직접 확인한다",
+      "확인 후에만 삭제를 제안하고, 오탐 가능성(grep 기반이라 동적 호출/export는 못 잡음)을 언급한다"
+    ]
+  }
+]

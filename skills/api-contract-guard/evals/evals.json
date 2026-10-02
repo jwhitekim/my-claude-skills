@@ -1,0 +1,36 @@
+[
+  {
+    "skills": [
+      "change-impact",
+      "api-contract-guard"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "openapi.yaml이 수정됐고 엔드포인트 하나가 삭제됨",
+    "expected_behavior": [
+      "change-impact가 api-contract-guard의 check.sh staged를 실행한다",
+      "엔드포인트 삭제를 breaking change로 알린다",
+      "아무것도 막지 않는다"
+    ]
+  },
+  {
+    "skills": [
+      "api-contract-guard"
+    ],
+    "query": "API 스펙 breaking change 확인해줘",
+    "state": "swagger.json에 새 엔드포인트만 추가됨 (삭제/필수화 없음)",
+    "expected_behavior": [
+      "check.sh를 실행하고, 추가만 있는 변경은 breaking이 아니므로 문제 없다고 답한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact",
+      "api-contract-guard"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "OpenAPI/Swagger 스펙 파일이 프로젝트에 아예 없음",
+    "expected_behavior": [
+      "change-impact가 스펙 파일 변경이 없다고 판단해 api-contract-guard를 호출하지 않는다"
+    ]
+  }
+]

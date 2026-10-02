@@ -1,0 +1,30 @@
+[
+  {
+    "skills": ["config-drift-guard"],
+    "query": "이 프로젝트 환경 설정 어긋나는 거 없나 봐줘",
+    "state": "git 저장소, 아직 설치 안 됨",
+    "expected_behavior": [
+      "scripts/setup.sh를 실행해 훅 껍데기와 settings.json 등록을 설치한다",
+      "세션 재시작이 필요하다는 점을 알린다"
+    ]
+  },
+  {
+    "skills": ["config-drift-guard"],
+    "query": ".env.production에 왜 FEATURE_FLAG가 없다고 나와?",
+    "state": ".env.example에는 FEATURE_FLAG가 있는데 .env.production에는 없음",
+    "expected_behavior": [
+      "env-keys.sh는 .env.example을 기준으로 키 집합만 비교하며 값은 보지 않는다고 설명한다",
+      "FEATURE_FLAG를 .env.production에 추가해야 하는지, 그 환경엔 원래 필요 없는지 사용자에게 확인한다",
+      "값을 추측해서 채우지 않는다"
+    ]
+  },
+  {
+    "skills": ["config-drift-guard"],
+    "query": "CI 워크플로마다 node 버전이 다르다고 뜨는데 이거 일부러 그런 거야",
+    "state": "여러 워크플로 파일이 Node 18/20을 각각 matrix로 테스트하려고 의도적으로 다르게 설정됨",
+    "expected_behavior": [
+      "matrix 테스트처럼 의도된 설정인지 먼저 확인한다",
+      "의도된 것이면 문제 없다고 답하고 넘어간다"
+    ]
+  }
+]
