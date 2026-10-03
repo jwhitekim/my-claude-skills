@@ -1,6 +1,6 @@
 ---
 name: incident-review
-description: 장애가 난 뒤 그 시각 전후의 커밋, GitHub Actions 실행 기록, 실패 로그를 모아 타임라인 → 원인 분석 → 재발 방지 액션 아이템으로 정리한 회고 문서를 docs/incidents/YYYY-MM-DD-<제목>.md에 쓴다. "장애 회고 써줘", "아까 배포 터진 거 정리해줘", "incident review" 같은 요청에 사용한다. 서버 런타임 로그는 자동으로 못 가져오므로 사용자가 붙여넣은 것을 쓴다.
+description: "Use after an outage, failed deployment, or production incident when the user wants a postmortem written — \"장애 회고 써줘\", \"아까 배포 터진 거 정리해줘\", \"incident review\"."
 ---
 
 # incident-review

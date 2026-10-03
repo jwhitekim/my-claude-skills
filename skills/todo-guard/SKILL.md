@@ -1,6 +1,6 @@
 ---
 name: todo-guard
-description: 별칭 "투두가드" — 사용자가 이 별칭으로 부르면 이 스킬(todo-guard)을 뜻한다. TODO.md 기반 작업 추적과 Stop hook 검증을 세팅해 지시를 드랍하지 않게 만든다. 다음 상황에서 사용할 것 - 사용자가 "todo-guard"·"투두가드"를 지목해 세팅을 요청할 때, 작업 누락 방지 체계 구축을 요청할 때, "앞으로 ~하지 마"·"항상 ~해"처럼 항상 지킬 규칙을 말할 때, "투두가드 세팅 지워줘"·"투두가드 걷어내줘"·"투두가드 빼줘"처럼 세팅 제거를 요청할 때, "투두가드 세팅된 프로젝트 훑어줘"처럼 점검을 요청할 때. TODO.md 가 있는 프로젝트에서 작업할 때는 이 스킬의 운영 규칙을 따를 것. 문서 문체 검사(슬라이드 · 보고서 검수)는 이 스킬이 하지 않는다 - 글검수(geulgeomsu) 스킬이 한다.
+description: "별칭 \"투두가드\" — 사용자가 이 별칭으로 부르면 이 스킬(todo-guard)을 뜻한다. Use when the user names todo-guard/투두가드 to set it up, asks for a way to stop instructions being dropped, states a standing rule (\"앞으로 ~하지 마\", \"항상 ~해\"), asks to remove the setup (\"투두가드 세팅 지워줘\", \"걷어내줘\", \"빼줘\"), asks to audit set-up projects (\"투두가드 세팅된 프로젝트 훑어줘\"), or is working in a project that has TODO.md. Not for document style review (that is 글검수/geulgeomsu)."
 ---
 
 # todo-guard (투두가드)

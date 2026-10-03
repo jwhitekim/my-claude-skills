@@ -1,6 +1,6 @@
 ---
 name: migration-guard
-description: "*/migrations/*.sql (Supabase CLI, 또는 비슷한 구조의 DB 마이그레이션) 변경을 검사한다. 새로 추가된 마이그레이션에서 destructive 변경(DROP TABLE/COLUMN, TRUNCATE), lock 위험(DEFAULT 없는 NOT NULL 컬럼 추가, CONCURRENTLY 없는 인덱스 생성, 컬럼 타입 변경)을 찾고, 이미 커밋된 마이그레이션 파일을 수정하는 경우(이미 적용된 환경엔 반영 안 됨)도 경고한다. change-impact가 마이그레이션 변경을 감지하면 대신 호출한다. \"마이그레이션 파일 위험한 거 없나 봐줘\" 같은 요청에도 수동으로 사용한다."
+description: "Use when files under */migrations/*.sql (Supabase CLI or similar) are added or edited and you need to know whether the migration is destructive, risks table locks, or edits an already-applied migration — \"마이그레이션 파일 위험한 거 없나 봐줘\"."
 ---
 
 # migration-guard

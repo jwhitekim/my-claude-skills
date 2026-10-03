@@ -1,6 +1,6 @@
 ---
 name: release-guard
-description: git tag를 push할 때만 동작하는 pre-push 훅을 설치해서, 버전 파일(package.json/VERSION/pyproject.toml)과 태그 버전이 일치하는지, CHANGELOG.md에 해당 버전 항목이 있는지, working tree가 깨끗한지 확인하고 실패하면 푸시를 막는다. 또한 버전 올리기/CHANGELOG 항목 추가/태그 생성을 한 번에 해주는 스크립트도 제공한다. "릴리즈 준비해줘", "버전 올려줘", "release-guard 깔아줘" 같은 요청에 사용한다. 일반 브랜치 푸시나 커밋에는 전혀 관여하지 않는다 — deploy-status의 앞단(배포 전)이고, deploy-status는 뒷단(배포 후)이다.
+description: "Use when preparing a release or tagging a version — \"릴리즈 준비해줘\", \"버전 올려줘\" — when a tag push was blocked by the pre-push hook, or when asked to install release-guard in a project. Not for ordinary branch pushes or commits."
 ---
 
 # release-guard

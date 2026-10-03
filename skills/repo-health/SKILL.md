@@ -1,6 +1,6 @@
 ---
 name: repo-health
-description: 프로젝트의 오래된 TODO/FIXME, 참조 없는 함수 후보, 너무 큰 파일, git에 잘못 추적되고 있는 흔적 파일(.DS_Store, *.log, node_modules 등)을 세션 시작 시 자동으로 점검하는 훅을 설치한다. "저장소 건강검진해줘", "repo-health 깔아줘", "이 프로젝트 정리할 거 없나 봐줘" 같은 요청에 사용한다. todo-guard·trim-rules와 역할이 다르다 — 그것들은 지시 추적·규칙 파일 길이를 다루고, 이건 코드/저장소 자체의 잡음을 다룬다.
+description: "Use when asked to check a repository for accumulated clutter — \"저장소 건강검진해줘\", \"이 프로젝트 정리할 거 없나 봐줘\" — or to install it in a project (\"repo-health 깔아줘\"). Not for TODO.md task tracking (todo-guard) or rule-file length (trim-rules, watch-rules)."
 ---
 
 # repo-health

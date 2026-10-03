@@ -1,6 +1,6 @@
 ---
 name: commit-and-push
-description: 코드 변경을 커밋하고 원격에 푸시할 때 사용한다. 커밋 전 프로젝트에 맞는 빌드/린트/테스트 검증을 거치고, 푸시는 사람 확인을 받은 뒤에만 한다. "커밋해줘", "커밋하고 푸시해줘", "이거 올려줘" 같은 요청에 쓴다.
+description: "Use when the user asks to commit and/or push code changes — \"커밋해줘\", \"커밋하고 푸시해줘\", \"이거 올려줘\"."
 ---
 
 # 커밋 & 푸시

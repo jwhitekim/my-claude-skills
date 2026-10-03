@@ -1,6 +1,6 @@
 ---
 name: gemini-rewrite
-description: Use when Korean text Claude just wrote (docs, README, commit messages) reads stiff, translated, or choppy, or the user asks to make it smoother/more natural/easier to read — meaning and information are preserved, but structure (paragraph/section organization) may be improved for clarity. Gemini API로 처리하는 작업들을 모아둔 스킬(현재는 한국어 문장 다듬기).
+description: "Use when Korean text Claude just wrote (docs, README, commit messages) reads stiff, translated, or choppy, or the user asks to make it smoother, more natural, or easier to read without changing its meaning."
 ---
 
 # gemini

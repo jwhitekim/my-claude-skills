@@ -1,6 +1,6 @@
 ---
 name: skill-lint
-description: my-claude-skills 레포의 skills/*/ 구성이 망가지지 않았는지 검사한다. SKILL.md 누락, frontmatter 오류, 깨진 스크립트 경로 참조, 실행 권한 없는 스크립트, README 누락, 완전히 중복된 description을 찾는다. "skill-lint 돌려줘", "스킬 저장소 점검해줘", 새 스킬을 만들거나 이름을 바꾼 직후에 사용한다. install.sh 실행 시에도 자동으로 돈다(경고만 하고 설치를 막지는 않음).
+description: "Use right after creating, renaming, or editing a skill in the my-claude-skills repo, or when asked \"skill-lint 돌려줘\", \"스킬 저장소 점검해줘\"."
 ---
 
 # skill-lint

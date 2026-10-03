@@ -1,6 +1,6 @@
 ---
 name: trim-rules
-description: 프로젝트의 규칙 파일(CLAUDE.md, .claude/rules/*.md)이 길다고 느껴지거나(200줄 안팎 초과) watch-rules 훅이 경고할 때 정리한다. "CLAUDE.md 너무 길다", "규칙 파일 정리해줘" 같은 요청에 쓴다.
+description: "Use when a project's rule files (CLAUDE.md, .claude/rules/*.md) feel too long (around 200+ lines) or the watch-rules hook warns about their length — \"CLAUDE.md 너무 길다\", \"규칙 파일 정리해줘\"."
 ---
 
 # 규칙 파일 정리

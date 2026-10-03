@@ -1,6 +1,6 @@
 ---
 name: config-drift-guard
-description: dev/staging/prod용 .env* 파일 사이의 키 불일치(값은 비교하지 않음, 비밀값 노출 방지)와 .github/workflows/*.yml 사이의 Node/Python 버전 핀 불일치를 세션 시작 시 자동으로 점검하는 훅을 설치한다. "환경 설정 어긋나는 거 없나 봐줘", "config-drift-guard 깔아줘", ".env 파일들 키 맞는지 확인해줘" 같은 요청에 사용한다.
+description: "Use when .env* files for different environments (dev/staging/prod) or GitHub Actions workflows may have drifted apart — \"환경 설정 어긋나는 거 없나 봐줘\", \".env 파일들 키 맞는지 확인해줘\" — or when asked to install config-drift-guard in a project."
 ---
 
 # config-drift-guard

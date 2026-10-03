@@ -1,6 +1,6 @@
 ---
 name: dependency-guard
-description: lockfile(package-lock.json/yarn.lock/pnpm-lock.yaml)이 바뀐 커밋에서 어떤 패키지가 얼마나 바뀌었는지 요약하고, major 버전 업그레이드를 강조하고, 필요하면 npm 라이선스 변경도 확인한다. change-impact가 lockfile 변경을 감지하면 대신 호출한다. "의존성 변경 요약해줘", "이 lockfile 변경 안전해?" 같은 요청에도 수동으로 사용한다. Renovate/Dependabot 없이 로컬에서 직접 올린 의존성도 동일하게 다룬다(이 레포 사용자는 PR 워크플로를 안 씀).
+description: "Use when package-lock.json, yarn.lock, or pnpm-lock.yaml changed and you need to judge whether the dependency updates are safe — \"의존성 변경 요약해줘\", \"이 lockfile 변경 안전해?\" — including updates made locally without Renovate/Dependabot."
 ---
 
 # dependency-guard

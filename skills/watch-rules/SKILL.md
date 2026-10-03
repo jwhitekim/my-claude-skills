@@ -1,6 +1,6 @@
 ---
 name: watch-rules
-description: 프로젝트의 규칙 파일(CLAUDE.md, .claude/rules/*.md — Claude Code가 자동 로드하는 컨텍스트 전체를 가리킴)이 너무 길어졌는지 세션 시작 시 자동으로 감지하는 훅을 설치한다. "규칙 파일 길이 체크 훅 설치해줘", "trim-rules가 안 도는 것 같다", "이 프로젝트에도 watch-rules 깔아줘" 같은 요청에 사용한다.
+description: "Use when asked to set up automatic length checks for a project's rule files (CLAUDE.md, .claude/rules/*.md) — \"규칙 파일 길이 체크 훅 설치해줘\", \"이 프로젝트에도 watch-rules 깔아줘\" — or when trim-rules never seems to run on its own."
 ---
 
 # watch-rules

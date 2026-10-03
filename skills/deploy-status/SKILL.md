@@ -1,6 +1,6 @@
 ---
 name: deploy-status
-description: 코드를 푸시한 뒤 GitHub Actions 자동 배포가 정상적으로 끝났는지 확인한다. 배포 파이프라인이 있는 프로젝트에서 푸시 직후, 또는 "배포 상태 확인해줘", "배포 잘 됐나 확인", "방금 푸시한 거 배포 성공했어?" 요청 시 사용한다. 실패했으면 로그를 읽고 원인을 진단해 수정안을 제시한다.
+description: "Use right after pushing to a project with a GitHub Actions deployment pipeline, or when asked \"배포 상태 확인해줘\", \"배포 잘 됐나 확인\", \"방금 푸시한 거 배포 성공했어?\", including when a deployment failed and needs diagnosis."
 ---
 
 # deploy-status

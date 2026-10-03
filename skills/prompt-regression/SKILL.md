@@ -1,6 +1,6 @@
 ---
 name: prompt-regression
-description: LLM 프롬프트나 에이전트 지시문을 고칠 때, 고치기 전 출력을 기준선(baseline)으로 저장해 두고 고친 뒤 같은 테스트 입력으로 다시 돌려 jev-eval로 양쪽을 채점해서 점수가 떨어진 케이스(회귀)를 찾는다. 애매하거나 채점이 실패한 케이스는 Claude가 두 출력을 직접 읽고 판정한다. "프롬프트 고쳤는데 나빠진 거 없나 봐줘", "프롬프트 회귀 테스트", "프롬프트 기준선 저장해줘" 같은 요청에 사용한다.
+description: "Use before or after changing an LLM prompt or agent instruction when you need to know whether outputs got worse — \"프롬프트 고쳤는데 나빠진 거 없나 봐줘\", \"프롬프트 회귀 테스트\", \"프롬프트 기준선 저장해줘\"."
 ---
 
 # prompt-regression

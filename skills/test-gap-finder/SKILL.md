@@ -1,6 +1,6 @@
 ---
 name: test-gap-finder
-description: 변경된 코드(git diff)에 대응하는 테스트 파일이 있는지 확인하고, 없으면 테스트 케이스를 제안하고 직접 작성한다. change-impact가 소스 변경을 감지하면 대신 호출한다. "테스트 누락 확인해줘", "이 변경 테스트 커버 되나 봐줘" 같은 요청에도 수동으로 사용한다. jev-eval로 사소한 변경(포맷팅·주석 등)은 자동으로 거른다.
+description: "Use when changed code may lack tests — \"테스트 누락 확인해줘\", \"이 변경 테스트 커버 되나 봐줘\" — or when change-impact reports source changes without tests."
 ---
 
 # test-gap-finder

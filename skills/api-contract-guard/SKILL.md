@@ -1,6 +1,6 @@
 ---
 name: api-contract-guard
-description: OpenAPI/Swagger 스펙 파일(openapi.yaml, swagger.json 등)이 바뀐 커밋에서 breaking change(엔드포인트 삭제, 필드가 새로 required가 됨, 필드/스키마 삭제, 타입 변경, enum 값 제거)를 감지한다. change-impact가 스펙 변경을 감지하면 대신 호출한다. "API 스펙 breaking change 확인해줘" 같은 요청에도 수동으로 사용한다. 파일명에 openapi 또는 swagger가 들어간 .yaml/.yml/.json 파일만 대상으로 한다 — 그런 파일이 없는 프로젝트에서는 아무 일도 하지 않는다.
+description: "Use when an OpenAPI/Swagger spec file (name contains openapi or swagger, .yaml/.yml/.json) changed and you need to know whether existing API clients will break, or when asked \"API 스펙 breaking change 확인해줘\". Not for projects without such spec files."
 ---
 
 # api-contract-guard

@@ -1,6 +1,6 @@
 ---
 name: change-impact
-description: git diff(staged 또는 마지막 커밋)를 보고 소스·의존성·API 스펙·DB 마이그레이션·문서 스펙·설정/CI 중 무엇이 영향을 받는지 분류한 뒤, 해당하는 가드(test-gap-finder, dependency-guard, api-contract-guard, migration-guard, docs-compliance, config-drift-guard)만 골라 실행하고 결과를 한 번에 보여준다. "이 변경이 뭘 건드리는지 봐줘", "영향 범위 확인해줘", "change-impact 돌려줘" 같은 요청에 사용한다. 가드 이름을 하나하나 기억할 필요 없이 이것 하나로 부르면 된다. 아무것도 막지 않는다.
+description: "Use when asked what a change affects — \"이 변경이 뭘 건드리는지 봐줘\", \"영향 범위 확인해줘\", \"change-impact 돌려줘\" — or when you want the relevant guard checks on a staged diff or the last commit without naming each guard."
 ---
 
 # change-impact
