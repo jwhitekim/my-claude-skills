@@ -17,6 +17,10 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 ~/CODINGPROJECT/my-claude-skills/install.sh
 ```
 
+### 전역 훅
+
+`install.sh`는 세션 시작 점검 3개(`repo-health`, `watch-rules`, `config-drift-guard`)를 `~/.claude/settings.json`의 `SessionStart`에 등록합니다. 그래서 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돕니다. 다시 실행해도 중복으로 쌓이지 않고, 기존 설정은 `settings.json.bak`에 남습니다. 프로젝트에 같은 스킬의 훅이 이미 깔려 있으면 전역 훅은 건너뜁니다.
+
 ### API 키
 
 `jev-eval`(`AI_GATEWAY_API_KEY`)과 `gemini-rewrite`(`GEMINI_API_KEY`)는 API 키가 필요합니다. `install.sh`가 키가 없으면 입력받아 `~/.config/my-claude-skills/secrets.env`(권한 600, 레포 밖)에 저장하고, 스크립트들은 환경변수가 없으면 이 파일에서 읽습니다. 지금 셸에 환경변수로 키가 있으면 그 값을 그대로 저장합니다. 입력을 건너뛰었다면 나중에 `./install.sh`를 다시 실행하면 됩니다. 키를 바꾸려면 파일에서 해당 줄을 지우고 다시 실행하세요.

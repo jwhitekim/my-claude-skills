@@ -42,6 +42,11 @@ for d in "$REPO_DIR"/skills/*/; do
   fi
 done
 
+# 세션 시작 점검(repo-health, watch-rules, config-drift-guard)을 전역 설정에 등록한다.
+# 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돈다. 기존 설정은 settings.json.bak에 남긴다.
+PY_BIN="python3"
+command -v python3 >/dev/null 2>&1 || PY_BIN="python"
+"$PY_BIN" "$REPO_DIR/scripts/global-hooks.py" "$HOME/.claude/settings.json"
 # API 키는 레포 밖 비밀 파일에 둔다. jev-eval/gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
 SECRETS="$SECRETS_DIR/secrets.env"
