@@ -38,6 +38,7 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 
 | 스킬 | 설명 |
 |---|---|
+| `agent-browser` | 크롬 확장 대신 Vercel `agent-browser` CLI로 웹 페이지 열기·클릭·입력·스크린샷. Linux·Mac·Windows 공통, 로그인 상태는 전용 프로필에 유지. 로그인 없는 읽기는 가벼운 lightpanda, 나머지는 Chrome. `install.sh`가 CLI·전용 Chrome·lightpanda를 설치. |
 | `api-contract-guard` | OpenAPI/Swagger 스펙 변경에서 엔드포인트 삭제·필드 required화·타입 변경 같은 breaking change 감지. change-impact가 호출. |
 | `change-impact` | diff를 소스/의존성/API 스펙/마이그레이션/문서 스펙/설정·CI로 분류하고 해당하는 가드만 골라 실행. 가드들을 한 번에 부르는 진입점. |
 | `commit-and-push` | 코드 변경을 커밋하고 원격에 푸시할 때 사용. 커밋 전 빌드/린트/테스트 검증, 푸시는 사람 확인 후에만. |

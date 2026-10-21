@@ -47,6 +47,10 @@ done
 PY_BIN="python3"
 command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 "$PY_BIN" "$REPO_DIR/scripts/global-hooks.py" "$HOME/.claude/settings.json"
+
+# agent-browser 스킬이 쓰는 CLI와 전용 Chrome. 실패해도 나머지 설치는 계속한다.
+bash "$REPO_DIR/skills/agent-browser/scripts/setup.sh" || echo "[agent-browser] 설치 실패 — 나중에 다시 실행하세요"
+
 # API 키는 레포 밖 비밀 파일에 둔다. jev-eval/gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
 SECRETS="$SECRETS_DIR/secrets.env"
