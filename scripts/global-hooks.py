@@ -23,9 +23,11 @@ def marker(name):
 
 
 def command(name, script):
+    # 경로만 따옴표로 감싼다. 인자(summary 등)까지 감싸면 파일명으로 읽힌다.
+    path, _, args = script.partition(" ")
     return (
-        '[ -f .claude/hooks/{n}.sh ] || bash "$HOME/.claude/skills/{n}/{s}"'
-    ).format(n=name, s=script)
+        '[ -f .claude/hooks/{n}.sh ] || bash "$HOME/.claude/skills/{n}/{p}"{a}'
+    ).format(n=name, p=path, a=(" " + args) if args else "")
 
 
 def main():
