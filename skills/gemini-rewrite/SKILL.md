@@ -50,3 +50,7 @@ bash ~/.claude/skills/gemini-rewrite/scripts/call.sh "<프롬프트>"
 stdout으로 내고, 실패하면 에러 메시지와 함께 non-zero로 종료한다 — API 키 체크, HTTP
 호출, 에러 파싱이 여기 다 들어있으므로 작업별 스크립트(`rewrite.sh`처럼)는 프롬프트
 조립만 하면 된다.
+
+`GEMINI_PROVIDER`로 호출 경로를 고른다. 기본 `google`은 Google API를 직접 부르고, 크레딧
+소진(402)이나 한도 초과(429)면 `AI_GATEWAY_API_KEY`가 있을 때 Vercel AI Gateway로 한 번
+다시 부른다. `gateway`는 처음부터 AI Gateway(`google/<모델>`)만 쓴다.
