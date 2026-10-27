@@ -27,4 +27,4 @@ mkdir -p .claude
 "$PY_BIN" "$S/merge-settings.py" .claude/settings.json
 
 echo "[deploy-status] 설치 완료. 세션을 재시작(/exit 후 재진입)해야 적용됩니다."
-echo "[deploy-status] push 직후 최대 5분간 배포 상태를 기다립니다 — 그동안 다음 턴이 지연될 수 있습니다."
+echo "[deploy-status] push 직후 기본 최대 300초간 상태를 기다립니다(DEPLOY_STATUS_WAIT_SECONDS로 조절) — 그동안 다음 턴이 지연될 수 있습니다."

@@ -4,15 +4,16 @@
     "query": "방금 푸시한 거 배포 잘 됐는지 확인해줘",
     "state": "프로젝트에 .github/workflows/deploy.yml이 있고, 방금 main에 푸시함",
     "expected_behavior": [
-      "gh run list로 방금 커밋(headSha)에 해당하는 워크플로 실행을 찾는다",
-      "완료까지 기다리거나(gh run watch) 상태를 폴링한다",
-      "성공/실패 여부와 근거(워크플로 이름, 소요시간 등)를 보고한다"
+      "gh run list --commit으로 대상 SHA의 모든 실행을 가져와 워크플로별로 확인한다",
+      "DEPLOY_STATUS_WORKFLOW 지정 또는 environment: 키와 이름·파일명으로 배포 대상·후보를 구분하고 근거를 출력한다",
+      "배포 대상·후보의 완료를 기다리거나 상태를 폴링하고, 훅의 대기 시간 초과는 진행 중으로 보고한다",
+      "CI와 배포를 구분해 성공·실패·취소·진행 중·실행 없음을 보고하고, 후보가 없으면 배포 워크플로를 특정하지 못함을 알린다"
     ]
   },
   {
     "skills": ["deploy-status"],
     "query": "배포가 실패했다고 알림이 왔는데 왜 그런지 봐줄 수 있어?",
-    "state": "gh run list 결과 conclusion이 failure인 최근 실행이 있음",
+    "state": "대상 커밋의 배포 워크플로 실행 conclusion이 failure임",
     "expected_behavior": [
       "gh run view --log-failed로 실패한 job의 로그만 읽는다",
       "전체 로그를 다 훑지 않는다",

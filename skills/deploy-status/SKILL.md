@@ -13,36 +13,56 @@ Actions 탭을 직접 열어보지 않아도 되게 한다. `gh` CLI로 확인�
 
 - `gh` CLI가 설치되어 있고 인증돼 있어야 한다 (`gh auth status`로 확인, 안 돼 있으면
   사람에게 `gh auth login`을 직접 실행하라고 안내 — 로그인은 사람이 한다).
-- 프로젝트에 `.github/workflows/*.yml`이 있어야 한다. 없으면 이 스킬을 쓸 대상이 아니다.
+- 프로젝트에 `.github/workflows/*.yml` 또는 `*.yaml`이 있어야 한다. 없으면 이 스킬을 쓸 대상이 아니다.
 
 ## 절차
 
 1. **워크플로 실행 찾기**
 
    ```bash
-   gh run list --branch "$(git branch --show-current)" --limit 1 \
-     --json databaseId,status,conclusion,workflowName,headSha
+   gh run list --commit "$(git rev-parse HEAD)" --limit 100 \
+     --json databaseId,name,workflowName,workflowDatabaseId,status,conclusion,event,headBranch,url
    ```
 
-   방금 푸시한 커밋(`git rev-parse HEAD`)의 `headSha`와 일치하는 실행을 찾는다. 아직 안
-   떴으면(큐 대기) 잠시 후 다시 조회한다 — 짧은 폴링 간격(몇십 초)으로 몇 차례 재시도하고,
+   대상 커밋 SHA의 실행을 모두 가져와 워크플로별로 본다. 반환 수가 limit에 닿으면
+   limit을 늘려 다시 조회한다. 최신 실행 하나나 같은 SHA의 첫 실행만 고르지 않는다.
+   아직 안 떴으면 잠시 후 다시 조회한다 — 짧은 폴링 간격(몇십 초)으로 몇 차례 재시도하고,
    그래도 안 뜨면 워크플로 트리거 조건(브랜치, 경로 필터 등)이 이 푸시와 안 맞는 건 아닌지
    `.github/workflows/*.yml`의 `on:` 조건을 확인한다.
+
+   `DEPLOY_STATUS_WORKFLOW`가 있으면 이름 또는 파일명으로 일치하는 것만 배포로 본다
+   (쉼표로 여러 개 지정). 파일명은 `gh workflow list --all --json id,name,path`로
+   `workflowDatabaseId`와 연결한다. 이 목록도 limit에 닿으면 늘려 조회한다.
+   지정이 없으면 워크플로 파일(`*.yml`, `*.yaml`)에 `environment:` 키가 있거나,
+   이름·파일명에 deploy/release/publish가 들어간 것을 **배포 후보**로 표시하고 근거를
+   출력한다. 후보가 없으면 "배포 워크플로를 특정하지 못함"을 알리고 모든 실행 상태를
+   보여 준다. CI 성공만으로 배포 성공을 단정하지 않는다.
 
 2. **완료까지 대기**
 
    ```bash
-   gh run watch <run-id> --exit-status
+   gh run watch <배포-run-id> --exit-status
    ```
 
    배포는 보통 몇 분 걸린다. 오래 걸리는 작업이므로, 대화 흐름상 즉시 응답이 필요하면
    백그라운드로 돌리고 완료 후 보고하는 방식을 쓴다(에이전트 환경이면 `run_in_background`).
+   배포로 지정된 워크플로 또는 배포 후보의 실행을 각각 확인한다.
+   자동 훅은 `DEPLOY_STATUS_WAIT_SECONDS`(0 이상의 정수, 기본 300초) 동안 동기 대기한다.
+   실행 생성 대기도 이 제한에 포함하며, 시간이 지나도 끝나지 않으면 "아직 진행 중"으로
+   종료한다. 대기 시간 초과를 실패로 처리하지 않는다.
 
 3. **결과 보고**
 
-   - **성공(`conclusion: success`)**: 워크플로 이름, 소요 시간, 배포 대상(있다면 URL)을
+   워크플로별로 배포 지정·후보와 그 외 실행을 구분하고, 후보의 결과를 전체 배포 결과로
+   단정하지 않는다. 같은 워크플로에 실행이 여러 개면 모두 보여 준다.
+
+   - **성공(`conclusion: success`)**: 워크플로 이름, 소요 시간, 실행 URL, 배포 대상(있다면 URL)을
      간단히 보고한다.
-   - **실패(`conclusion: failure`)**: 다음으로 진행한다.
+   - **실패(`conclusion: failure`)**: 해당 배포 워크플로의 다음 단계로 진행한다.
+   - **취소(`conclusion: cancelled`)**: 실패와 구분해서 알린다.
+   - **진행 중(`status: in_progress`·`queued` 등)**: 현재 상태를 그대로 알린다.
+   - **실행 없음**: 트리거 조건이 맞지 않을 수 있음을 알린다. 성공·실패로 단정하지 않는다.
+   - 그 밖의 결론(`skipped`, `neutral`, `timed_out` 등)은 원래 값을 보여 준다.
 
 4. **실패 시 진단**
 
