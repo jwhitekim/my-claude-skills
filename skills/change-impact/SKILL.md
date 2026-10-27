@@ -44,7 +44,7 @@ CI 워크플로가 바뀌었으면 푸시 후 `deploy-status`로 배포 결과�
 
 - **커밋·푸시를 막거나 대신하지 않는다.** `commit-and-push`와 연결되어 있지 않다 — 필요할
   때 따로 부르는 도구다.
-- **세션 시작 훅을 설치하지 않는다.** `repo-health`, `config-drift-guard`, `watch-rules`의
+- **세션 시작 훅을 설치하지 않는다.** `repo-health`, `config-drift-guard`의
   자동 감지는 각자 설치한다.
 - **`release-guard`는 부르지 않는다.** 태그 푸시 시점의 pre-push 훅이라 diff 분석과는 시점이
   다르다.

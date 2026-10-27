@@ -1,12 +1,11 @@
 ---
 name: repo-health
-description: "Use when asked to check a repository for accumulated clutter — \"저장소 건강검진해줘\", \"이 프로젝트 정리할 거 없나 봐줘\" — or to install it in a project (\"repo-health 깔아줘\"). Not for rule-file length (trim-rules, watch-rules)."
+description: "Use when asked to check a repository for accumulated clutter — \"저장소 건강검진해줘\", \"이 프로젝트 정리할 거 없나 봐줘\" — or to install it in a project (\"repo-health 깔아줘\")."
 ---
 
 # repo-health
 
-`watch-rules`와 같은 패턴 — 세션 시작 시 자동으로 돌아서, Claude가 능동적으로 점검하길
-기다리지 않고 기계적으로 알린다. 문제를 자동으로 고치지 않는다. 알리기만 한다.
+세션 시작 시 자동으로 돌아서, Claude가 능동적으로 점검하길 기다리지 않고 기계적으로 알린다. 문제를 자동으로 고치지 않는다. 알리기만 한다.
 
 ## 설치
 

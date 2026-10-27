@@ -8,7 +8,6 @@ TARGET_DIR="$HOME/.claude/skills"
 # (macOS 기본 bash 3.2는 연관 배열을 지원하지 않아 함수로 대체)
 old_name_for() {
   case "$1" in
-    jev-eval) echo "jev" ;;
     gemini-rewrite) echo "gemini" ;;
     deploy-status) echo "deploy-status-guard" ;;
   esac
@@ -52,7 +51,16 @@ while IFS= read -r d; do
   fi
 done < <(skill_dirs)
 
-# 세션 시작 점검(repo-health, watch-rules, config-drift-guard)을 전역 설정에 등록한다.
+# 레포에서 지운 스킬의 링크가 남지 않게 정리한다. 이 레포를 가리키는 링크만 대상이다.
+for link in "$TARGET_DIR"/*; do
+  [ -L "$link" ] || continue
+  dest="$(readlink "$link")"
+  case "$dest" in
+    "$REPO_DIR"/skills/*) [ -e "$dest" ] || { rm -f "$link"; echo "removed stale link: $(basename "$link")"; } ;;
+  esac
+done
+
+# 세션 시작 점검(repo-health, config-drift-guard)을 전역 설정에 등록한다.
 # 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돈다. 기존 설정은 settings.json.bak에 남긴다.
 PY_BIN="python3"
 command -v python3 >/dev/null 2>&1 || PY_BIN="python"
@@ -69,7 +77,7 @@ bash "$(skill_dir_of agent-browser)/scripts/setup.sh" || echo "[agent-browser] �
 # codex 스킬이 쓰는 Codex CLI. 터미널에서 실행하면 로그인까지 진행한다.
 bash "$(skill_dir_of codex)/scripts/setup.sh" || echo "[codex] 설치 실패 — 나중에 다시 실행하세요"
 
-# API 키는 레포 밖 비밀 파일에 둔다. jev-eval/gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
+# API 키는 레포 밖 비밀 파일에 둔다. gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
 SECRETS="$SECRETS_DIR/secrets.env"
 mkdir -p "$SECRETS_DIR"

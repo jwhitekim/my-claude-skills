@@ -13,9 +13,10 @@ import sys
 # 스킬 이름: 스킬 폴더 기준 실행 스크립트
 HOOKS = {
     "repo-health": "scripts/scan.sh summary",
-    "watch-rules": "scripts/check.sh",
     "config-drift-guard": "scripts/scan.sh summary",
 }
+# 삭제된 스킬의 훅이 남으면 매 세션 없는 스크립트를 부른다.
+REMOVED = ("watch-rules",)
 
 
 def marker(name):
@@ -41,6 +42,13 @@ def main():
         data = {}
 
     session_start = data.setdefault("hooks", {}).setdefault("SessionStart", [])
+
+    for name in REMOVED:
+        session_start[:] = [
+            entry for entry in session_start
+            if not any(marker(name) in h.get("command", "") for h in entry.get("hooks", []))
+        ]
+        print("global hook removed: %s" % name)
 
     for name, script in HOOKS.items():
         session_start[:] = [

@@ -29,7 +29,6 @@ cd my-claude-skills
 모든 프로젝트에서 세션을 시작할 때 다음을 점검합니다.
 
 - `repo-health`: 저장소 정리 대상
-- `watch-rules`: 규칙 파일 길이
 - `config-drift-guard`: 환경 설정과 CI 설정의 차이
 
 다시 설치해도 중복 등록되지 않습니다. 프로젝트에 `.claude/hooks/<스킬명>.sh`가 있으면 그 스킬의 전역 훅은 건너뜁니다.
@@ -63,12 +62,12 @@ printenv OPENAI_API_KEY | codex login --with-api-key   # OpenAI API 키(표준�
 
 | 변수 | 용도 |
 | --- | --- |
-| `AI_GATEWAY_API_KEY` | `jev-eval` 필수, `gemini-rewrite` 대체 호출 |
+| `AI_GATEWAY_API_KEY` | `gemini-rewrite`가 Google API 402·429 때 대체 호출 |
 | `GEMINI_API_KEY` | `gemini-rewrite`의 Gemini API 호출 |
 
 `gemini-rewrite`는 Google API가 402·429를 돌려줄 때만 AI Gateway로 대체 호출합니다.
 
-`jev-eval`은 **직접 구매한 AI Gateway 크레딧**이 있어야 동작합니다. 무료 플랜 크레딧으로는 쓸 수 없습니다. 두 스킬을 실행하려면 `jq`도 필요합니다.
+`gemini-rewrite`를 실행하려면 `jq`도 필요합니다.
 
 ```sh
 cp .env.example .env
@@ -118,15 +117,12 @@ cp .env.example .env
 | [`deploy-status`](skills/deploy-status/SKILL.md) | 푸시 후 GitHub Actions 배포 상태 확인·실패 진단 |
 | [`gemini-rewrite`](skills/gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
 | [`incident-review`](skills/incident-review/SKILL.md) | 장애·배포 실패 회고 작성 |
-| [`jev-eval`](skills/jev-eval/SKILL.md) | 위험 작업 승인 판단·분류·기준별 채점 |
 | [`migration-guard`](skills/migration-guard/SKILL.md) | SQL 마이그레이션의 파괴적 변경·잠금 위험 점검 |
 | [`readme-writer`](skills/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 | [`release-guard`](skills/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 사전 점검 |
 | [`repo-health`](skills/repo-health/SKILL.md) | 저장소에 쌓인 불필요한 파일·정리 대상 점검 |
 | [`skill-lint`](skills/skill-lint/SKILL.md) | 스킬 생성·수정 후 저장소 구성 점검 |
 | [`test-gap-finder`](skills/test-gap-finder/SKILL.md) | 변경 코드의 테스트 누락 후보 확인 |
-| [`trim-rules`](skills/trim-rules/SKILL.md) | 길어진 CLAUDE.md·규칙 파일 정리 |
-| [`watch-rules`](skills/watch-rules/SKILL.md) | 규칙 파일 길이 자동 점검 훅 설정 |
 
 ## 라이선스
 
