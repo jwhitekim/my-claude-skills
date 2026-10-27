@@ -1,22 +1,30 @@
 #!/usr/bin/env bash
 # 변경된 lockfile에서 버전이 바뀐 패키지를 찾고, major 버전이 오른 것을 강조한다.
 # 네트워크를 쓰지 않는다 — lockfile diff만 본다.
-# 사용법: diff-versions.sh [staged|last]  (기본 staged)
-set -u
+# 사용법: diff-versions.sh [staged|last] [--packages major|all]
+set -uo pipefail
 
 _DIR="${BASH_SOURCE[0]%/*}"
 PY_BIN="python3"
 command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 
 MODE="${1:-staged}"
+PACKAGES=""
+if [ "$#" -gt 1 ]; then
+  if [ "$#" -ne 3 ] || [ "$2" != "--packages" ] || { [ "$3" != major ] && [ "$3" != all ]; }; then
+    echo "사용법: diff-versions.sh [staged|last] [--packages major|all]" >&2
+    exit 1
+  fi
+  PACKAGES="$3"
+fi
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 0
 fi
 
 case "$MODE" in
-  staged) CHANGED=$(git diff --cached --name-only --diff-filter=M) ;;
-  last)   CHANGED=$(git diff --name-only --diff-filter=M HEAD~1 HEAD 2>/dev/null) ;;
+  staged) CHANGED=$(git diff --cached --name-only --diff-filter=M) || exit 1 ;;
+  last)   CHANGED=$(git diff --name-only --diff-filter=M HEAD~1 HEAD) || exit 1 ;;
   *)      echo "[dependency-guard] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
 esac
 
@@ -24,13 +32,17 @@ LOCKFILES=$(echo "$CHANGED" | grep -E '(^|/)(package-lock\.json|yarn\.lock|pnpm-
 [ -z "$LOCKFILES" ] && exit 0
 
 old_content() {
-  git show "HEAD:$1" 2>/dev/null
+  if [ "$MODE" = staged ]; then
+    git show "HEAD:$1" 2>/dev/null
+  else
+    git show "HEAD~1:$1" 2>/dev/null
+  fi
 }
 new_content() {
   if [ "$MODE" = "staged" ]; then
     git show ":$1" 2>/dev/null
   else
-    cat "$1" 2>/dev/null
+    git show "HEAD:$1" 2>/dev/null
   fi
 }
 
@@ -41,8 +53,12 @@ while IFS= read -r file; do
   [ -z "$file" ] && continue
   base="$(basename "$file")"
 
-  old_versions=$(old_content "$file" | "$PY_BIN" "$_DIR/extract-versions.py" "$base" | sort -u)
-  new_versions=$(new_content "$file" | "$PY_BIN" "$_DIR/extract-versions.py" "$base" | sort -u)
+  old_versions=$(old_content "$file" | "$PY_BIN" "$_DIR/extract-versions.py" "$base" | sort -u) || {
+    echo "[dependency-guard] 이전 lockfile 읽기/추출 실패: $file" >&2; exit 1;
+  }
+  new_versions=$(new_content "$file" | "$PY_BIN" "$_DIR/extract-versions.py" "$base" | sort -u) || {
+    echo "[dependency-guard] 새 lockfile 읽기/추출 실패: $file" >&2; exit 1;
+  }
 
   [ -z "$old_versions" ] && [ -z "$new_versions" ] && continue
 
@@ -55,6 +71,12 @@ while IFS= read -r file; do
     old_major="${old_ver%%.*}"
     new_major="${new_ver%%.*}"
     TOTAL=$((TOTAL + 1))
+    if [ -n "$PACKAGES" ]; then
+      if [ "$PACKAGES" = all ] || [ "$old_major" != "$new_major" ]; then
+        echo "${name}@${new_ver}"
+      fi
+      continue
+    fi
     if [ "$old_major" != "$new_major" ]; then
       echo "  - [MAJOR] ${name}: ${old_ver} -> ${new_ver} (${file})"
       MAJOR_BUMPS="${MAJOR_BUMPS}${name}@${new_ver}
@@ -65,7 +87,7 @@ while IFS= read -r file; do
   done <<< "$new_versions"
 done <<< "$LOCKFILES"
 
-if [ "$TOTAL" -gt 0 ]; then
+if [ -z "$PACKAGES" ] && [ "$TOTAL" -gt 0 ]; then
   echo "[dependency-guard] 의존성 버전 변경 ${TOTAL}건"
 fi
 if [ -n "$MAJOR_BUMPS" ]; then

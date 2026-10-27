@@ -33,4 +33,12 @@ if git diff --cached --quiet; then
   exit 1
 fi
 
+# 디렉터리 인자 안의 파일과 기존 staged 파일까지 실제 커밋 대상을 검사한다.
+while IFS= read -r -d '' f; do
+  if [[ "$f" =~ (^|/)\.env(\..*)?$|(^|/)secrets/|\.pem$|id_rsa$|\.key$ ]]; then
+    echo "REFUSED: staged 파일 '$f'는 민감 파일 패턴입니다. 커밋 대상에서 빼세요." >&2
+    exit 1
+  fi
+done < <(git diff --cached --name-only -z)
+
 git commit -m "$MSG"

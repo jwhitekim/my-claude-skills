@@ -5,20 +5,20 @@ description: "Use when the user asks to commit and/or push code changes — \"�
 
 # 커밋 & 푸시
 
-커밋과 푸시는 되돌리는 비용이 다르다. 커밋은 로컬이라 거의 공짜로 되돌릴 수 있지만,
-푸시는 원격에 올라가면 되돌리는 데 force push가 필요하다. 그래서 **커밋 전 검증은
-자동으로, 푸시는 사람 확인을 조건으로** 한다.
+커밋은 로컬 기록을, 푸시는 공유 원격 기록을 바꾼다. 푸시한 변경도 `git revert` 후 일반
+푸시로 되돌릴 수 있다. 공유 기록 재작성은 별도 위험이 있으므로 **커밋 전 검증은 자동으로,
+푸시는 사람 확인을 조건으로** 한다.
 
-## 0. 커밋 자동화 규칙 부트스트랩
+## 0. 자동 커밋 정책 설치 (별도 요청 시에만)
 
-프로젝트의 규칙 파일(`.claude/rules/`, `CLAUDE.md`, 또는 비표준 `.claude/RULES.md`)에
-"커밋 자동화" 규칙이 아직 없으면, 다음 스크립트로 (마커 포함) 한 번만 추가한다. 이미
-있으면 아무것도 하지 않는다(중복 삽입 방지 — 직접 grep해서 확인해도 되고, 그냥 실행해도
-안전하다). `.claude/rules/`가 있으면 그 안에 `commit-automation.md`를 새로 만들고,
-없으면 기존 단일 파일에 이어붙인다:
+일회성 커밋·푸시 요청에서는 규칙 파일을 고치지 않는다. 사용자가 **앞으로의 작업도 자동
+커밋하도록 프로젝트 정책을 설치해 달라고 별도로 요청한 경우**에만 아래 명령을 쓴다.
+`.claude/rules/`가 있으면 `commit-automation.md`를 만들고, 없으면 `CLAUDE.md`,
+`.claude/CLAUDE.md`, `.claude/RULES.md` 순으로 기존 파일에 추가한다(없으면 `CLAUDE.md` 생성).
+마커가 있으면 중복 설치하지 않는다. 옵션 없이 실행하면 설치를 거부한다:
 
 ```bash
-bash ~/.claude/skills/commit-and-push/scripts/install-auto-commit-rule.sh
+bash ~/.claude/skills/commit-and-push/scripts/install-auto-commit-rule.sh --enable
 ```
 
 이 규칙이 있는 프로젝트에서는 검증(1번)을 통과한 기능/버그 수정 작업을 사용자의 별도
@@ -27,22 +27,23 @@ bash ~/.claude/skills/commit-and-push/scripts/install-auto-commit-rule.sh
 
 ## 1. 프로젝트 툴체인 감지
 
-파일 존재 여부만으로 판정 가능한 기계적 작업이라 스크립트로 뺐다:
+프로젝트 루트에서 실제 스크립트·타깃·도구 설정을 확인한다(Python 3 필요):
 
 ```bash
 bash ~/.claude/skills/commit-and-push/scripts/detect-verify-cmd.sh
 ```
 
-프로젝트 루트에서 실행하면 실행 가능한 검증 명령을 한 줄씩 출력한다(예:
-`npm run build`, `pytest -q`). 출력된 명령을 그대로 실행하고 결과를 확인한다.
-**아무것도 출력되지 않으면** 이 스크립트가 아는 스택이 아니라는 뜻이다 — 프로젝트의
-`README`/`Makefile` 등에서 직접 찾거나, 검증 수단이 정말 없으면 사람에게 알리고 검증
-없이 커밋할지 확인받는다.
+package.json의 실제 scripts, Makefile의 명시된 타깃, Python 도구 설정·의존 선언·테스트
+파일, Cargo.toml/go.mod와 실행 파일을 확인해 명령을 출력한다. 근거는 stderr에 나온다.
+패키지 매니저는 packageManager/lockfile을 따르며 불명확하면 npm을 초기 기본값으로 쓴다.
+프로젝트의 CI·개발 문서와 대조한 뒤 실행하고 종료 코드와 결과를 확인한다.
+**출력이 없거나 탐지가 실패하면** README·CI·설정에서 직접 찾는다. 검증 수단이 없으면
+사람에게 알리고 검증 없이 커밋할지 확인받는다. pyproject.toml 자동 해석은 Python 3.11+다.
 
 수정한 파일이 스크립트가 못 잡는 언어(`.js`/`.py` 개별 구문 검증 등)면 해당 언어의
 구문 검증 명령을 추가로 직접 실행한다.
 
-증거(명령 실행 결과 전체)를 보고에 포함한다. "통과했다"고 말로만 하지 않는다.
+명령, 종료 코드, 주요 결과를 보고한다. 실패 시에는 원인을 확인할 로그도 붙인다.
 검증이 실패하면 커밋하지 않고 사람에게 무엇이 실패했는지 보고한다.
 
 ## 2. staged 파일 검토
@@ -67,7 +68,9 @@ staged 파일 목록과, 그 중 `.env`/`secrets/`/`*.pem`/`*.key`/`id_rsa` 패�
 한 커밋 = 한 논리적 변경. 작업을 여러 단계로 나눠 진행했다면, 단계마다 커밋한다.
 한 번에 몰아서 큰 커밋 하나로 만들지 않는다.
 
-**커밋 메시지 형식** — 영어, type prefix, 전체 메시지 100자 이내(넘으면 본문부터 생략):
+**커밋 메시지 형식** — 프로젝트 지침·commitlint 설정을 먼저 확인하고,
+`git log -20 --format=%B`로 실제 언어·제목·본문 관례를 본다. 명시된 정책이 우선이다. 확인한 관례가
+없을 때만 영어, type prefix, 제목 100자 이내를 초기 기본값으로 쓴다. 필요한 본문은 남긴다:
 
 ```
 {type}: {what}
@@ -92,8 +95,10 @@ bash ~/.claude/skills/commit-and-push/scripts/safe-commit.sh "{type}: {what}" <f
 
 ## 4. 푸시 — 검증 게이트 + 사람 확인 게이트
 
-프로젝트가 브랜치 전략을 명시하지 않았다면(`main` 하나만 쓰는 게 일반적) 새 브랜치를
-만들지 않는다. 이미 작업 중인 브랜치가 있으면 그 브랜치에 푸시한다.
+프로젝트 지침, CI의 대상 브랜치, 현재 브랜치와 upstream, `git branch -a`,
+`git log --all --oneline --decorate -20`을 확인한다. 명시된 방침이 우선이며, 이력만으로 방침을 단정하지
+않는다. 기능 브랜치가 필요하면 그 방침을 따른다. 확인되지 않으면 현재 브랜치 유지가
+초기 기본값이다. detached HEAD이거나 push 대상이 불명확하면 사람에게 확인한다.
 
 **4-1. 재검증** — 1번의 검증 명령을 이전 커밋들과 합쳐진 상태에서 한 번 더 실행한다.
 실패하면 푸시하지 않고 사람에게 보고한다(로컬 커밋은 되돌릴 필요 없음).
@@ -132,7 +137,7 @@ bash ~/.claude/skills/commit-and-push/scripts/safe-push.sh [remote] [branch]
 
 - `git push --force` (사용자가 명시적으로 요청하고 위험을 인지한 경우가 아니면 하지 않음)
 - 사람 확인 없이 푸시
-- 브랜치 전략이 없는 프로젝트에서 임의로 새 브랜치 생성
+- 확인한 브랜치 방침과 다른 브랜치에 임의로 푸시
 - 커밋 히스토리 재작성(`rebase -i` 등 — 메시지만 고치는 `commit --amend`는 예외)
 - 검증 실패 상태에서의 푸시
 - `.env`, `secrets/` 등 민감 파일 커밋

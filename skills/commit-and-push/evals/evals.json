@@ -1,6 +1,8 @@
 [
   {
-    "skills": ["commit-and-push"],
+    "skills": [
+      "commit-and-push"
+    ],
     "query": "이 버그 수정 커밋해줘",
     "state": "작업 디렉토리에 검증(빌드)을 통과한 버그 수정 변경사항이 있음",
     "expected_behavior": [
@@ -11,7 +13,9 @@
     ]
   },
   {
-    "skills": ["commit-and-push"],
+    "skills": [
+      "commit-and-push"
+    ],
     "query": "이거 커밋하고 푸시까지 해줘",
     "state": "작업 디렉토리에 검증을 통과한 변경사항이 있음",
     "expected_behavior": [
@@ -22,12 +26,38 @@
     ]
   },
   {
-    "skills": ["commit-and-push"],
+    "skills": [
+      "commit-and-push"
+    ],
     "query": "이 실험적인 변경사항은 커밋하지 말고 그냥 되돌려줘",
     "state": "작업 디렉토리에 변경사항이 있음",
     "expected_behavior": [
       "커밋을 실행하지 않는다 — 이건 revert/discard 요청이지 커밋 요청이 아니다",
       "commit-and-push 스킬의 커밋 절차(safe-commit.sh 등)를 트리거하지 않는다"
+    ]
+  },
+  {
+    "skills": [
+      "commit-and-push"
+    ],
+    "query": "이 수정만 커밋해줘",
+    "state": "자동 커밋 정책이 없고, 한국어 커밋 메시지와 기능 브랜치를 쓰도록 프로젝트에 명시돼 있음",
+    "expected_behavior": [
+      "자동 커밋 정책 설치나 규칙 파일 변경을 하지 않는다",
+      "프로젝트 설정과 git log를 확인해 한국어 메시지·브랜치 방침을 따른다",
+      "프로젝트에 선언된 검증 명령의 종료 코드를 확인하고 커밋한다"
+    ]
+  },
+  {
+    "skills": [
+      "commit-and-push"
+    ],
+    "query": "이 프로젝트는 앞으로 검증 통과한 수정도 자동 커밋하도록 규칙 설치해줘",
+    "state": "자동 커밋 정책은 없고 .claude/rules/가 있음",
+    "expected_behavior": [
+      "별도 지속 정책 설치 요청임을 확인하고 install-auto-commit-rule.sh --enable을 쓴다",
+      "이미 있는 정책은 중복 설치하지 않는다",
+      "푸시 전 사람 확인은 유지한다"
     ]
   }
 ]

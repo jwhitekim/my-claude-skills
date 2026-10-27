@@ -4,6 +4,12 @@
 # 문구를 손으로 고치는 대신, 정해진 문구를 스크립트가 결정적으로 넣는다.
 set -euo pipefail
 
+if [ "$#" -ne 1 ] || [ "$1" != "--enable" ]; then
+  echo "사용법: install-auto-commit-rule.sh --enable" >&2
+  echo "프로젝트에 지속되는 자동 커밋 정책을 설치합니다. 별도 설치 요청이 있을 때만 --enable을 쓰세요." >&2
+  exit 2
+fi
+
 BEGIN="<!-- commit-and-push:auto-commit-rule:begin -->"
 END="<!-- commit-and-push:auto-commit-rule:end -->"
 
@@ -29,6 +35,10 @@ if [ -d .claude/rules ]; then
     exit 0
   fi
   TARGET=".claude/rules/commit-automation.md"
+  if [ -e "$TARGET" ]; then
+    echo "REFUSED: $TARGET 파일이 이미 있습니다. 기존 내용을 확인하세요." >&2
+    exit 1
+  fi
   BLOCK > "$TARGET"
   echo "[commit-and-push] 커밋 자동화 규칙 추가 완료 - $TARGET"
   exit 0

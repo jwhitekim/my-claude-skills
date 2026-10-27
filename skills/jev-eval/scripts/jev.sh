@@ -11,11 +11,11 @@ if [ -z "${AI_GATEWAY_API_KEY:-}" ]; then
 fi
 
 # 사용법: jev.sh "<state, 평가 대상 텍스트/JSON>" '<questions JSON, TypeSafe systemone 형식>'
-# questions 예시: {"approve": {"type": "noul", "instructions": "Is this safe to run?"}}
+# questions 예시: {"needs_review": {"type": "noul", "instructions": "Does this need human review under the supplied policy?"}}
 #               {"route": {"type": "choice", "instructions": "...", "criteria": {"cheap": "...", "claude": "..."}}}
-#               {"risk": {"type": "score", "instructions": "...", "scale": {"min": 0, "max": 10}}}
+#               {"risk": {"type": "score", "instructions": "...", "criteria": ["low", "medium", "high"]}}
 STATE="${1:?사용법: jev.sh \"<state>\" '<questions JSON>'}"
-QUESTIONS="${2:?questions JSON이 필요합니다. 예: '{\"approve\": {\"type\": \"noul\", \"instructions\": \"...\"}}'}"
+QUESTIONS="${2:?questions JSON이 필요합니다. 예: '{\"needs_review\": {\"type\": \"noul\", \"instructions\": \"...\"}}'}"
 
 TMPFILE=$(mktemp)
 trap 'rm -f "$TMPFILE"' EXIT
@@ -35,4 +35,4 @@ if [ "$HTTP_CODE" -ge 400 ]; then
   exit 1
 fi
 
-echo "$RESPONSE" | jq '.answers'
+echo "$RESPONSE" | jq -e '.answers | select(type == "object" and length > 0)'

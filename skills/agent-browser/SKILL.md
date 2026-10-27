@@ -1,13 +1,13 @@
 ---
 name: agent-browser
-description: "Use when a task needs a real browser — opening a web page, clicking or filling forms, reading a JS-rendered or logged-in page, taking a screenshot, or checking a deployed app — \"이 사이트 들어가서 확인해줘\", \"브라우저로 열어봐\", \"스크린샷 찍어줘\". Prefer this over the Chrome extension (claude-in-chrome) on every OS."
+description: "Use when a task needs a real browser — opening a web page, clicking or filling forms, reading a JS-rendered or logged-in page, taking a screenshot, or checking a deployed app — \"이 사이트 들어가서 확인해줘\", \"브라우저로 열어봐\", \"스크린샷 찍어줘\". Choose the engine and connection from required browser features and available login sessions."
 ---
 
 # agent-browser
 
 에이전트에게 Vercel의 `agent-browser` CLI(브라우저 자동화 명령줄 도구)를 쥐어 준다.
-크롬 확장(claude-in-chrome)을 대신하는 것이 목적이다 — Linux·Mac·Windows 모두에서 같은
-방식으로 동작하고, 사람이 쓰는 크롬 창을 건드리지 않는다.
+독립 브라우저 세션으로 작업한다. 기존 로그인 창이 필요하면 연결 가능한 세션을 먼저
+확인한다. `--auto-connect`는 사람이 쓰는 Chrome에 연결하므로 독립 실행과 구분한다.
 
 ## 전제조건
 
@@ -31,13 +31,14 @@ description: "Use when a task needs a real browser — opening a web page, click
 
    | 상황 | 엔진 |
    |---|---|
-   | 로그인 없이 읽기·링크 찾기·간단한 클릭 | `--engine lightpanda` |
+   | 로그인·화면 렌더링 없이 읽기·링크 찾기, CLI 안내에서 지원 확인 | `--engine lightpanda` |
    | 로그인 필요(`--profile`), 화면 확인(스크린샷), 창 띄우기(`--headed`) | Chrome(기본값) |
    | lightpanda에서 페이지가 비거나 동작이 안 됨 | Chrome으로 다시 연다 |
 
-   lightpanda는 Chrome보다 메모리를 약 1/5만 쓰고 2~3배 빨리 연다. 대신 프로필을 못 쓰고,
-   스크린샷은 CSS 없이 찍혀서 화면 확인용으로는 쓸 수 없다. 읽어 오는 링크는 Chrome과 같다.
-   `command -v lightpanda`가 없으면(Windows 등) 항상 Chrome을 쓴다.
+   먼저 로그인 필요 여부와 `--profile`·`--headed`·CSS 렌더링·스크린샷 요구를 확인한다.
+   현재 CLI 안내에서 지원되는 기능인지 확인한 뒤 엔진을 고른다. lightpanda 실행 파일이
+   없거나 필요한 기능이 없으면 Chrome을 쓴다. 링크·본문은 실제 snapshot으로 확인한다.
+   속도와 메모리 사용량은 페이지·버전·환경에 따라 다르다. 고정된 개선 배수를 가정하지 않는다.
 
 3. **기본 흐름: 열기 → 스냅샷 → 조작**
 
@@ -49,7 +50,7 @@ description: "Use when a task needs a real browser — opening a web page, click
    ```
 
    - 페이지를 바꾸는 동작 뒤에는 snapshot을 다시 찍는다. ref는 페이지가 바뀌면 무효가 된다.
-   - 글만 읽으면 되면 `agent-browser read <url>`이 더 싸다.
+   - 글만 읽으면 되고 현재 CLI가 지원하면 `agent-browser read <url>`을 쓸 수 있다.
    - 화면 배치를 봐야 할 때만 `screenshot`을 쓴다. 기본은 텍스트 snapshot이다.
 
 4. **로그인이 필요한 사이트**
