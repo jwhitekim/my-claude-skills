@@ -1,6 +1,6 @@
 ---
 name: repo-health
-description: "Use when asked to check a repository for accumulated clutter — \"저장소 건강검진해줘\", \"이 프로젝트 정리할 거 없나 봐줘\" — or to install it in a project (\"repo-health 깔아줘\"). Not for TODO.md task tracking (todo-guard) or rule-file length (trim-rules, watch-rules)."
+description: "Use when asked to check a repository for accumulated clutter — \"저장소 건강검진해줘\", \"이 프로젝트 정리할 거 없나 봐줘\" — or to install it in a project (\"repo-health 깔아줘\"). Not for rule-file length (trim-rules, watch-rules)."
 ---
 
 # repo-health

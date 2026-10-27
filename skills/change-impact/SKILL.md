@@ -26,7 +26,6 @@ bash ~/.claude/skills/change-impact/scripts/impact.sh last     # 마지막 커�
 | 의존성 | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml` | `dependency-guard` — 버전 변경, major 업그레이드 |
 | API 스펙 | 파일명에 `openapi`/`swagger`가 든 `.yaml/.yml/.json` | `api-contract-guard` — breaking change |
 | DB 마이그레이션 | `*/migrations/*.sql` | `migration-guard` — destructive/lock 위험, 기존 파일 수정 |
-| 문서 스펙 | `specs/<capability>/spec.md` | `docs-compliance`의 `check-spec.sh` — Requirement/Scenario 형식 |
 | 설정/CI | `.env*`, `.github/workflows/*` | `config-drift-guard` — `.env` 키·CI 버전 핀 불일치 (현재 상태 전체 비교) |
 
 CI 워크플로가 바뀌었으면 푸시 후 `deploy-status`로 배포 결과를 확인하라고 한 줄 덧붙인다.

@@ -75,7 +75,6 @@ bash ~/.claude/skills/incident-review/scripts/collect.sh "<장애 시각>" [앞�
 - **액션 아이템은 실행 가능한 크기로.** "더 조심하기" 같은 건 쓰지 않는다. 테스트 추가, 가드
   스킬 설치(예: `config-drift-guard`, `release-guard`)처럼 구체적인 것만 쓴다.
 - 문서를 쓴 뒤 액션 아이템 중 지금 바로 할 것이 있는지 사용자에게 묻는다.
-- 파일명의 날짜는 `docs-compliance`의 금지 패턴(`-v1.md` 같은 버전 번호)에 걸리지 않는다.
 
 ## 하지 않는 것
 
