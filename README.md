@@ -1,85 +1,134 @@
 # my-claude-skills
 
-개인용 Claude Code 스킬 모음. 버전관리는 이 레포에서 하고, 실제 사용은 symlink로 `~/.claude/skills/`에 연결해서 씁니다.
+개인용 Claude Code 스킬과 전역 훅·운영 정책을 한곳에서 관리하고 설치하는 저장소입니다.
 
 ## 설치
 
-```bash
+필요한 도구는 Git, Claude Code, Bash, Python 3, curl입니다. `agent-browser` 설치에는 npm·Homebrew·Cargo 중 하나가 필요합니다.
+
+```sh
+git clone https://github.com/jwhitekim/my-claude-skills   # 이미 받았다면 생략
+cd my-claude-skills
 ./install.sh
 ```
 
-`skills/` 아래의 각 폴더를 `~/.claude/skills/`에 symlink로 연결합니다. 레포 파일을 고치면 바로 반영되고, 새 스킬을 `skills/`에 추가한 뒤 다시 실행하면 그것도 자동으로 링크됩니다.
+[install.sh](install.sh)가 하는 일:
 
-다른 머신에서 처음 세팅할 때:
+- `skills/`의 각 폴더를 `~/.claude/skills/`에 심볼릭 링크로 연결합니다. **같은 이름의 기존 항목은 지우고 교체합니다.**
+- 전역 `SessionStart` 훅을 `~/.claude/settings.json`에 등록합니다.
+- [팀 운영 정책](policies/team-policy.md)을 전역 설정에 적용합니다.
+- `agent-browser`와 전용 Chrome, Codex CLI를 설치합니다. Lightpanda는 Linux·macOS(x86_64·arm64)에서만 설치합니다.
+- API 키를 `~/.config/my-claude-skills/secrets.env`(권한 600)에 저장합니다.
 
-```bash
-git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
-~/CODINGPROJECT/my-claude-skills/install.sh
-```
+바꾸는 전역 설정 파일은 수정 직전 상태를 `.bak`으로 남깁니다(실행할 때마다 덮어씀). CLI 설치가 실패해도 나머지는 계속합니다.
+
+링크 방식이라 설치 후에도 저장소를 지우면 안 됩니다. 새 스킬을 추가했다면 `./install.sh`를 다시 실행합니다.
 
 ### 전역 훅
 
-`install.sh`는 세션 시작 점검 3개(`repo-health`, `watch-rules`, `config-drift-guard`)를 `~/.claude/settings.json`의 `SessionStart`에 등록합니다. 그래서 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돕니다. 다시 실행해도 중복으로 쌓이지 않고, 기존 설정은 `settings.json.bak`에 남습니다. 프로젝트에 같은 스킬의 훅이 이미 깔려 있으면 전역 훅은 건너뜁니다.
+모든 프로젝트에서 세션을 시작할 때 다음을 점검합니다.
 
-### 팀장·직원 운영 방식
+- `repo-health`: 저장소 정리 대상
+- `watch-rules`: 규칙 파일 길이
+- `config-drift-guard`: 환경 설정과 CI 설정의 차이
 
-`install.sh`는 메인 Claude(팀장)가 추론·판단을 맡고 잡일은 하위 에이전트(직원)에게 맡기는 방식을 전역 설정에 적용합니다(`scripts/team-policy.py`).
+다시 설치해도 중복 등록되지 않습니다. 프로젝트에 `.claude/hooks/<스킬명>.sh`가 있으면 그 스킬의 전역 훅은 건너뜁니다.
 
-- `~/.claude/settings.json`의 `env`에 `CLAUDE_CODE_SUBAGENT_MODEL=haiku`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`을 넣어 직원 모델을 항상 Haiku로 고정합니다. FORCE가 켜지면 Agent 도구의 `model` 옵션과 에이전트 정의의 모델 지정이 무시됩니다.
-- 같은 파일에 `"attribution": {"commit": "", "pr": ""}`를 넣어 커밋·PR에 Claude 서명(`Co-Authored-By` 등)을 붙이지 않습니다.
-- `policies/team-policy.md`의 역할 분담 규칙을 `~/.claude/CLAUDE.md`에 표시선 블록으로 넣습니다. 블록 밖 내용은 그대로 두고, 다시 실행하면 블록만 갱신합니다.
-- 바꾸기 전 파일은 `.bak`으로 남깁니다. 되돌리려면 `python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE.md`를 실행하세요.
-- 새 Claude Code 세션부터 적용됩니다.
+### 팀 운영 정책
 
-### Codex
+- 메인 Claude가 추론·판단을, 하위 에이전트가 반복 작업을 맡습니다.
+- 하위 에이전트 모델을 Haiku로 고정합니다. 개별 모델 지정은 무시됩니다.
+- 커밋·PR의 Claude 서명을 끕니다.
+- 역할 분담 규칙을 `~/.claude/CLAUDE.md`의 관리 블록에 넣습니다. 다시 실행하면 블록만 갱신합니다.
 
-`codex` 스킬은 Codex CLI와 로그인이 필요합니다. `install.sh`가 CLI를 설치하고(npm이 없고 Homebrew가 있으면 Homebrew로, 둘 다 없으면 nvm으로 Node.js부터), 터미널에서 실행하면 로그인까지 진행합니다. 로그인은 개인 ChatGPT 계정(`codex login`, 브라우저 없는 서버는 `codex login --device-auth`)이나 OpenAI API 키(`codex login --with-api-key`) 중 하나로 합니다.
+새 Claude Code 세션부터 적용됩니다. 아래 명령은 정책 설정과 관리 블록을 지웁니다. 설치 전에 있던 설정값을 복원하지는 않습니다.
+
+```sh
+python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE.md
+```
+
+### Codex 로그인
+
+`codex` 스킬은 Codex CLI와 로그인이 필요합니다. CLI는 npm이나 Homebrew로 설치합니다. 둘 다 없으면 nvm으로 Node.js LTS부터 설치합니다. 로그인이 안 된 상태에서 터미널로 설치하면 로그인까지 진행합니다.
+
+직접 로그인할 때는 하나를 고릅니다.
+
+```sh
+codex login                  # 개인 ChatGPT 계정
+codex login --device-auth    # 브라우저 없는 서버
+printenv OPENAI_API_KEY | codex login --with-api-key   # OpenAI API 키(표준입력으로 전달)
+```
 
 ### API 키
 
-`jev-eval`(`AI_GATEWAY_API_KEY`)과 `gemini-rewrite`(`GEMINI_API_KEY`)는 API 키가 필요합니다. `install.sh`가 키를 `~/.config/my-claude-skills/secrets.env`(권한 600, 레포 밖)에 저장하고, 스크립트들은 환경변수가 없으면 이 파일에서 읽습니다.
+| 변수 | 용도 |
+| --- | --- |
+| `AI_GATEWAY_API_KEY` | `jev-eval` 필수, `gemini-rewrite` 대체 호출 |
+| `GEMINI_API_KEY` | `gemini-rewrite`의 Gemini API 호출 |
 
-키를 넣는 방법은 세 가지이고, 위에 있는 것이 우선합니다.
+`gemini-rewrite`는 Google API가 402·429를 돌려줄 때만 AI Gateway로 대체 호출합니다.
 
-1. 레포 루트 `.env`: `cp .env.example .env`로 복사해 값을 채운 뒤 `./install.sh`를 실행합니다. 저장된 값과 다르면 새 값으로 바꿉니다. `.env`는 git에 올라가지 않습니다.
-2. 지금 셸의 환경변수: 아직 저장된 키가 없을 때 그 값을 저장합니다.
-3. 직접 입력: 둘 다 없으면 터미널에서 입력받습니다. 건너뛰었다면 나중에 `./install.sh`를 다시 실행하면 됩니다.
+`jev-eval`은 **직접 구매한 AI Gateway 크레딧**이 있어야 동작합니다. 무료 플랜 크레딧으로는 쓸 수 없습니다. 두 스킬을 실행하려면 `jq`도 필요합니다.
 
-`.env`를 쓰지 않을 때 키를 바꾸려면 secrets 파일에서 해당 줄을 지우고 다시 실행하세요.
+```sh
+cp .env.example .env
+# .env에 키를 채운 뒤 실행합니다
+./install.sh
+```
 
-`jev-eval`은 직접 구매한 AI Gateway 크레딧이 있어야 동작합니다(무료 플랜 월 $5 크레딧으로는 사용 불가).
+설치할 때 키는 다음 순서로 정합니다.
 
-## 테스트 방법
+1. `.env`에 값이 있으면 그 값으로 저장합니다.
+2. 없으면 기존 저장값을 유지합니다.
+3. 저장값도 없으면 현재 셸의 환경변수를 저장합니다.
+4. 그것도 없으면 터미널에서 입력받습니다. Enter로 건너뛸 수 있고, 터미널이 아니면 묻지 않고 건너뜁니다.
 
-1. 레포에서 스킬 수정 (symlink라 `~/.claude/skills/`에 즉시 반영됨)
-2. 새 Claude Code 세션을 연다 (같은 세션은 스킬 목록이 캐시돼 있어 변경이 안 잡힐 수 있음)
-3. 해당 스킬의 description에 맞는 요청을 실제로 던져서 의도대로 호출/동작하는지 확인
-4. 문제 있으면 수정 → 새 세션에서 재확인 반복
+`.env`는 git에 올라가지 않습니다. `.env`를 바꿨거나 입력을 건너뛰었다면 설치를 다시 실행합니다.
 
-## 스킬 목록
+`.env` 없이 키를 바꾸려면 저장 파일에서 해당 줄을 지우고 설치를 다시 실행합니다.
 
-| 스킬 | 설명 |
-|---|---|
-| `agent-browser` | 크롬 확장 대신 Vercel `agent-browser` CLI로 웹 페이지 열기·클릭·입력·스크린샷. Linux·Mac·Windows 공통, 로그인 상태는 전용 프로필에 유지. 로그인 없는 읽기는 가벼운 lightpanda, 나머지는 Chrome. `install.sh`가 CLI·전용 Chrome·lightpanda를 설치. |
-| `api-contract-guard` | OpenAPI/Swagger 스펙 변경에서 엔드포인트 삭제·필드 required화·타입 변경 같은 breaking change 감지. change-impact가 호출. |
-| `change-impact` | diff를 소스/의존성/API 스펙/마이그레이션/문서 스펙/설정·CI로 분류하고 해당하는 가드만 골라 실행. 가드들을 한 번에 부르는 진입점. |
-| `codex` | Codex CLI를 불러 의견을 주고받고(세션 이어 묻기), 교차검증·문서 검증·프로젝트 리뷰를 맡기고, CLAUDE.md 같은 규칙 문서를 쓰게 함. 기본은 읽기 전용. `install.sh`가 CLI를 설치(Node 없으면 nvm부터). |
-| `commit-and-push` | 코드 변경을 커밋하고 원격에 푸시할 때 사용. 커밋 전 빌드/린트/테스트 검증, 푸시는 사람 확인 후에만. |
-| `config-drift-guard` | `.env*` 파일 간 키 불일치(값은 안 봄)와 CI 워크플로 간 Node/Python 버전 핀 불일치를 세션 시작 시 자동 점검. |
-| `dependency-guard` | lockfile 변경 시 패키지 버전 변경 요약, major 업그레이드 강조, npm 라이선스 위험 확인. change-impact가 호출. |
-| `deploy-status` | 푸시 후 GitHub Actions 배포가 정상적으로 끝났는지 확인하고, 실패 시 로그를 읽고 원인을 진단. |
-| `docs-compliance` | `specs/<capability>/spec.md`의 Requirement/Scenario 작성이나 `tasks.md` 항목 추가, 기존 `docs/` 구조 감사 시 사용. |
-| `docs-init` | 프로젝트에 spec/design 문서가 아직 없을 때 `docs/` 구조(contract/proposal/design/tasks)를 처음 세팅. |
-| `gemini-rewrite` | Claude가 쓴 한국어 문장이 번역투이거나 어색할 때 의미/정보는 유지하고 구조는 더 명확하게 재구성. |
-| `incident-review` | 장애 시각 전후 커밋·GitHub Actions 실행·실패 로그를 모아 타임라인/원인 분석/액션 아이템으로 정리한 회고 문서를 `docs/incidents/`에 작성. |
-| `jev-eval` | 위험한 툴 호출 승인, 여러 옵션 중 라우팅 결정, 항목 우선순위/점수 매기기 등 빠른 구조적 판단이 필요할 때. |
-| `migration-guard` | `*/migrations/*.sql` 변경에서 destructive/lock 위험 패턴과 기존 마이그레이션 수정을 감지. change-impact가 호출. |
-| `prompt-regression` | 프롬프트 수정 전 출력을 기준선으로 저장하고, 수정 후 같은 입력으로 돌려 jev-eval 채점으로 회귀를 찾음. 애매한 케이스는 Claude가 직접 판정. |
-| `readme-writer` | 개발자 표준 양식(standard-readme, Make a README, GitHub Docs, Google 가이드)의 공통 뼈대로 README를 새로 쓰거나 간단하게 줄임. 명령·경로는 저장소에서 확인한 것만 쓰고, 유형별 뼈대 4종(`templates.md`) 제공. |
-| `release-guard` | git tag push 시에만 동작하는 pre-push 훅. 버전/CHANGELOG/working tree를 확인하고 실패하면 푸시 차단. 버전 올리기+태그 생성 스크립트도 제공. |
-| `repo-health` | 오래된 TODO, 참조 없는 함수 후보, 큰 파일, git에 잘못 추적된 흔적 파일을 세션 시작 시 자동 점검. |
-| `skill-lint` | 이 레포의 `skills/*/` 구성(SKILL.md, 경로 참조, 실행 권한, README 등재)을 검사하는 메타 스킬. |
-| `test-gap-finder` | 변경된 코드에 대응하는 테스트 파일이 없는지 확인하고(사소한 변경은 jev로 자동 제외), 없으면 테스트 케이스를 제안·작성. change-impact가 호출. |
-| `todo-guard` | TODO.md 기반 작업 추적과 Stop hook 검증으로 지시를 드랍하지 않게 함. |
-| `trim-rules` | CLAUDE.md나 `.claude/rules/*.md`가 너무 길어졌을 때(200줄 안팎 초과) 정리. |
-| `watch-rules` | 규칙 파일이 길어지는 걸 세션 시작 시 자동 감지하는 훅을 설치. |
+스킬을 실행할 때는 환경변수가 저장 파일보다 우선합니다.
+
+## 사용법
+
+설치 후 Claude Code에서 스킬이 맡는 작업을 요청합니다. 예: `저장소 건강검진해줘` → `repo-health`.
+
+프로젝트별로 준비가 필요한 스킬도 있습니다.
+
+- [배포 상태 확인](skills/deploy-status/SKILL.md): GitHub Actions가 있어야 합니다.
+- [릴리스 점검 훅](skills/release-guard/SKILL.md): 프로젝트마다 따로 설치합니다.
+
+### 스킬 수정 후 확인
+
+1. 저장소에서 스킬을 고칩니다. 심볼릭 링크라 바로 반영됩니다.
+2. 새 Claude Code 세션을 엽니다. 기존 세션은 스킬 목록이 캐시돼 있을 수 있습니다.
+3. 스킬의 `description`에 맞는 요청으로 호출과 동작을 확인합니다.
+
+## 구성 목록
+
+| 스킬 | 용도 |
+| --- | --- |
+| [`agent-browser`](skills/agent-browser/SKILL.md) | 실제 브라우저로 웹 탐색·조작·화면 확인 |
+| [`api-contract-guard`](skills/api-contract-guard/SKILL.md) | OpenAPI·Swagger 변경의 호환성 점검 |
+| [`change-impact`](skills/change-impact/SKILL.md) | 변경 영향 범위와 관련 점검 확인 |
+| [`codex`](skills/codex/SKILL.md) | Codex 의견 요청, 교차 검증·리뷰·문서 초안 작성 |
+| [`commit-and-push`](skills/commit-and-push/SKILL.md) | 변경 검증과 커밋, 사용자 확인 후 푸시 |
+| [`config-drift-guard`](skills/config-drift-guard/SKILL.md) | 환경별 설정과 GitHub Actions의 차이 점검 |
+| [`dependency-guard`](skills/dependency-guard/SKILL.md) | 의존성 잠금 파일 변경의 안전성 점검 |
+| [`deploy-status`](skills/deploy-status/SKILL.md) | 푸시 후 GitHub Actions 배포 상태 확인·실패 진단 |
+| [`gemini-rewrite`](skills/gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
+| [`incident-review`](skills/incident-review/SKILL.md) | 장애·배포 실패 회고 작성 |
+| [`jev-eval`](skills/jev-eval/SKILL.md) | 위험 작업 승인 판단·분류·기준별 채점 |
+| [`migration-guard`](skills/migration-guard/SKILL.md) | SQL 마이그레이션의 파괴적 변경·잠금 위험 점검 |
+| [`prompt-regression`](skills/prompt-regression/SKILL.md) | 프롬프트·에이전트 지침 변경의 회귀 점검 |
+| [`readme-writer`](skills/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
+| [`release-guard`](skills/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 사전 점검 |
+| [`repo-health`](skills/repo-health/SKILL.md) | 저장소에 쌓인 불필요한 파일·정리 대상 점검 |
+| [`skill-lint`](skills/skill-lint/SKILL.md) | 스킬 생성·수정 후 저장소 구성 점검 |
+| [`test-gap-finder`](skills/test-gap-finder/SKILL.md) | 변경 코드의 테스트 누락 후보 확인 |
+| [`trim-rules`](skills/trim-rules/SKILL.md) | 길어진 CLAUDE.md·규칙 파일 정리 |
+| [`watch-rules`](skills/watch-rules/SKILL.md) | 규칙 파일 길이 자동 점검 훅 설정 |
+
+## 라이선스
+
+LICENSE 파일이 없어 라이선스 확인이 필요합니다.
