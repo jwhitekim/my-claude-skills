@@ -120,7 +120,6 @@ cp .env.example .env
 | [`incident-review`](skills/incident-review/SKILL.md) | 장애·배포 실패 회고 작성 |
 | [`jev-eval`](skills/jev-eval/SKILL.md) | 위험 작업 승인 판단·분류·기준별 채점 |
 | [`migration-guard`](skills/migration-guard/SKILL.md) | SQL 마이그레이션의 파괴적 변경·잠금 위험 점검 |
-| [`prompt-regression`](skills/prompt-regression/SKILL.md) | 프롬프트·에이전트 지침 변경의 회귀 점검 |
 | [`readme-writer`](skills/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 | [`release-guard`](skills/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 사전 점검 |
 | [`repo-health`](skills/repo-health/SKILL.md) | 저장소에 쌓인 불필요한 파일·정리 대상 점검 |
