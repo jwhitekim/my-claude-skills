@@ -1,28 +1,34 @@
 [
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "이 CLI 프로젝트 README 써줘. 개발자가 바로 써볼 수 있게 간단하게 해줘.",
     "state": "README가 없음. pyproject.toml에 Python >=3.11과 CLI 진입점이 있고, Makefile에 설치·테스트 명령이 있음. CLI 테스트에서 최소 호출과 출력을 확인할 수 있고 LICENSE에 SPDX 식별자와 저작권자가 있음.",
     "expected_behavior": [
       "저장소를 확인하고 라이브러리/CLI 뼈대를 선택해 제목·한 줄 설명·설치·사용법·라이선스 중심으로 작성한다",
       "요구사항과 설치 명령, 실제 CLI 호출을 근거로 코드 블록을 작성하고 테스트에서 확인한 기대 출력을 덧붙인다",
-      "해당하는 개발·기여 정보만 담고 확인한 라이선스를 마지막에 두며, 100줄 미만이면 목차를 생략한다",
+      "해당하는 개발·기여 정보만 담고 확인한 라이선스를 마지막에 두며, 목차는 탐색 필요성에 따라 선택한다",
       "명령·경로를 검증하고 변경 요약과 확인하지 못한 항목을 함께 제시한다"
     ]
   },
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "README가 너무 길어. 리드미 간단하게 정리해줘. README.md만 고쳐줘.",
     "state": "영어 본문과 영어 섹션 제목의 350줄 README가 있음. 설치·사용법·필수 제약 외에 docs/architecture.md와 docs/api.md에 이미 있는 상세 설명, 중복 기능 소개와 불필요한 배지가 있음. 문서 링크의 대상은 실제로 존재함.",
     "expected_behavior": [
       "영어 본문과 제목 언어를 유지하고 설치·사용법·필수 제약을 남긴다",
       "긴 설계·API 설명은 존재하는 docs 문서의 유효한 상대 링크로 대체하고 중복 소개와 불필요한 장식을 줄인다",
       "README.md만 수정하며 새 문서로 옮기지 않은 내용을 옮겼다고 보고하지 않는다",
-      "줄인 README가 100줄 미만이면 목차를 생략하고, 사용자에게 문서 링크로 대체한 정보와 삭제한 정보를 구분해 알린다"
+      "목차는 탐색 필요성에 따라 선택하고, 사용자에게 문서 링크로 대체한 정보와 삭제한 정보를 구분해 알린다"
     ]
   },
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "이 서비스 README 양식 맞춰줘. 환경변수랑 실행·테스트 방법이 보이면 돼.",
     "state": "한국어 README와 제목이 있음. pnpm-lock.yaml과 package.json에 dev, test 스크립트가 있고 start, lint는 없음. .env.example에 PORT와 DATABASE_URL이 있으며 런타임 코드에 사용처가 있음. LICENSE는 없고 배포 환경의 실제 비밀값은 별도 파일에 있음.",
     "expected_behavior": [
@@ -34,7 +40,9 @@
     ]
   },
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "packages/parser에 내부 팀용 README를 짧게 새로 써줘.",
     "state": "모노레포 하위 패키지에 README가 없음. 패키지 설정과 소스에 용도와 루트에서 실행하는 명령이 있고, 소유자 설정에 담당 팀이 있음. 기존 팀 문서에 내부 전용 상태가 기록되어 있음. 루트 README, LICENSE, docs/parser.md가 존재함.",
     "expected_behavior": [
@@ -45,7 +53,9 @@
     ]
   },
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "이 도구·설정 모음 저장소 README를 설치랑 구성 목록 위주로 간단하게 만들어줘.",
     "state": "install.sh, skills/의 개별 SKILL.md와 설정 예제, LICENSE가 있음. 기존 한국어 README에 여러 항목의 장문 사용법이 반복되어 있음. 설치 스크립트에서 실제 옵션과 요구 도구를 확인할 수 있으며 일부 개별 문서 링크가 오래된 경로를 가리킴.",
     "expected_behavior": [
@@ -56,15 +66,42 @@
     ]
   },
   {
-    "skills": ["readme-writer"],
+    "skills": [
+      "readme-writer"
+    ],
     "query": "README를 standard-readme 명세에 맞춰줘. 짧게 유지하되 기여 안내는 꼭 넣어줘.",
     "state": "영어 README가 70줄이며 저장소명·패키지명·설명이 일치함. 설치·사용법은 코드에서 확인할 수 있고 CONTRIBUTING.md에 문의 경로·PR 수락 여부·기여 조건이 있음. LICENSE에 SPDX 식별자와 저작권자가 있으며 기존 README는 License 뒤에 API와 Maintainers를 두고 있음.",
     "expected_behavior": [
       "간단형과 명세 준수형을 구분하고 standard-readme의 필수 섹션과 고정 순서를 적용한다",
       "제목과 패키지 설명 일치를 확인하고 별도 제목 없는 120자 미만 한 줄 설명, Install·Usage 코드 블록을 작성한다",
-      "Contributing을 생략하지 않고 확인한 문의 경로·PR 수락 여부·기여 조건 또는 해당 문서 링크를 제공한다",
+      "Contributing을 생략하지 않고 확인한 문의 경로·PR 수락 여부·기여 조건을 요약하며, CONTRIBUTING.md도 함께 링크한다",
       "API와 Maintainers를 명세 순서에 맞게 옮기고 SPDX 식별자·저작권자가 있는 License를 마지막 섹션으로 둔다",
-      "최종 README가 100줄 미만이면 목차를 생략하며 선택 섹션을 분량 채우기용으로 늘리지 않는다"
+      "최종 README가 100줄 미만이면 목차는 선택이며, 선택 섹션을 분량 채우기용으로 늘리지 않는다"
+    ]
+  },
+  {
+    "skills": [
+      "readme-writer"
+    ],
+    "query": "README 문장이 길어서 읽기 힘들어. 스크린샷이랑 구조도도 있으면 좋겠어.",
+    "state": "한국어 README에 조건이 겹친 긴 문장과 설명문처럼 긴 표 셀이 있음. docs/images/에 UI 스크린샷이 있고 alt가 비어 있음. 서비스 구성 요소 간 호출 흐름이 코드에 있음.",
+    "expected_behavior": [
+      "겹친 조건과 중복 문장을 나누거나 목록으로 정리하되 필수 제약은 유지하고, 한국어에 고정 단어 수를 적용하지 않는다",
+      "스크린샷은 상대 경로를 확인하고 핵심 정보를 설명하는 alt를 단다",
+      "구성 흐름은 Mermaid로 그리고 본문 설명과 accTitle·accDescr를 함께 둔다",
+      "GitHub에서 렌더링을 확인하지 못했으면 미검증으로 보고한다"
+    ]
+  },
+  {
+    "skills": [
+      "readme-writer"
+    ],
+    "query": "이 프로젝트 README 간단하게 써줘.",
+    "state": "README가 없음. codex와 gemini-rewrite 스킬이 설치되어 있지 않음. package.json에 build, test 스크립트가 있음.",
+    "expected_behavior": [
+      "Codex 없이 직접 초안을 쓰고, 다듬기와 검증도 직접 수행한다",
+      "명령은 package.json에서 확인한 build, test만 쓴다",
+      "보조 스킬 없이 대체 수행했다는 사실을 사용자에게 알린다"
     ]
   }
 ]
