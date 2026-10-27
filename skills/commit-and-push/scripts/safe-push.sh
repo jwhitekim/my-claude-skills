@@ -10,6 +10,22 @@ set -euo pipefail
 REMOTE="${1:-origin}"
 BRANCH="${2:-$(git branch --show-current)}"
 
+# 인자 검증: force·refspec·옵션 형태는 받지 않는다. 브랜치는 이름만 허용한다.
+if [ "$#" -gt 2 ]; then
+  echo "[safe-push] 인자는 최대 2개([remote] [branch])입니다: $*" >&2
+  exit 2
+fi
+case "$REMOTE" in
+  -*) echo "[safe-push] 원격 이름이 아닙니다: $REMOTE (옵션 형태는 받지 않습니다)" >&2; exit 2 ;;
+esac
+case "$BRANCH" in
+  ""|+*|-*|*:*) echo "[safe-push] 브랜치 이름이 아닙니다: $BRANCH (force·refspec 형태는 받지 않습니다)" >&2; exit 2 ;;
+esac
+if ! git check-ref-format --branch "$BRANCH" >/dev/null 2>&1; then
+  echo "[safe-push] 유효하지 않은 브랜치 이름입니다: $BRANCH" >&2
+  exit 2
+fi
+
 # 원격에 아직 이 브랜치가 없으면(첫 푸시) fetch할 것이 없다. ls-remote의 exit 2가 "없음"이고,
 # 그 외 실패(네트워크 등)는 그대로 멈춘다.
 RC=0
