@@ -11,7 +11,7 @@ FOUND=0
 
 while IFS=: read -r file line _; do
   [ -z "$file" ] && continue
-  blame_date=$(git log -1 --format=%at -L "${line},${line}:${file}" -- "$file" 2>/dev/null | tail -1)
+  blame_date=$(git blame -L "${line},${line}" --porcelain -- "$file" 2>/dev/null | awk '/^author-time /{print $2; exit}')
   [ -z "$blame_date" ] && continue
   age_days=$(( (NOW - blame_date) / 86400 ))
   if [ "$age_days" -ge "$DAYS" ]; then
