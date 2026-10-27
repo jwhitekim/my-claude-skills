@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # my-claude-skills 레포의 스킬(skills/<이름>/ 또는 skills/<분류>/<이름>/) 구성을 검사한다. 경고만 하고 아무것도 고치지 않는다.
-# 사용법: lint.sh            전체 스킬 검사
-#        lint.sh <스킬명>    해당 스킬만 검사
+# 검사: SKILL.md 존재, frontmatter name과 폴더명 일치, description 비어있음 여부,
+# SKILL.md의 scripts/*.sh·py 참조 경로 존재, scripts/*.sh 실행 권한, README 스킬 등재.
+# 전체 검사에서는 스킬명 중복과 description 완전 중복도 확인한다.
+# 사용법: bash scripts/skill-lint.sh            전체 스킬 검사
+#        bash scripts/skill-lint.sh <스킬명>    해당 스킬만 검사
 set -u
 
 _DIR="${BASH_SOURCE[0]%/*}"
-# 설치 경로(~/.claude/skills/...)로 불려도 레포를 찾도록 실제 경로에서 install.sh가 있는 곳까지 올라간다.
+# 호출한 작업 디렉터리와 무관하게 실제 스크립트 경로에서 install.sh가 있는 곳까지 올라간다.
 REPO_DIR="$(cd "$_DIR" && pwd -P)"
 while [ "$REPO_DIR" != "/" ] && [ ! -f "$REPO_DIR/install.sh" ]; do
   REPO_DIR="$(dirname "$REPO_DIR")"

@@ -24,7 +24,7 @@ skill_dir_of() {
 }
 
 # 설치 전 레포 구성 점검 (경고만 하고 설치는 계속 진행)
-LINT="$(skill_dir_of skill-lint)/scripts/lint.sh"
+LINT="$REPO_DIR/scripts/skill-lint.sh"
 if [ -x "$LINT" ]; then
   bash "$LINT"
 fi
@@ -60,7 +60,7 @@ for link in "$TARGET_DIR"/*; do
   esac
 done
 
-# 세션 시작 점검(repo-health, config-drift-guard)을 전역 설정에 등록한다.
+# 세션 시작 점검(repo-health, 설정 불일치 검사 포함)을 전역 설정에 등록한다.
 # 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돈다. 기존 설정은 settings.json.bak에 남긴다.
 PY_BIN="python3"
 command -v python3 >/dev/null 2>&1 || PY_BIN="python"
