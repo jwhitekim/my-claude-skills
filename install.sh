@@ -84,7 +84,8 @@ dotenv_value() {
 for key in AI_GATEWAY_API_KEY GEMINI_API_KEY; do
   value="$(dotenv_value "$key")"
   if [ -n "$value" ]; then
-    saved="$( . "$SECRETS" 2>/dev/null; printf '%s' "${!key:-}" )"
+    # 환경변수를 저장값으로 오인하지 않게 subshell에서 먼저 지운 뒤 파일만 읽는다.
+    saved="$( unset "$key"; . "$SECRETS" 2>/dev/null; printf '%s' "${!key:-}" )"
     if [ "$saved" = "$value" ]; then
       echo "key: ${key} 이미 저장됨 (.env와 같음)"
       continue
