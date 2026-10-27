@@ -67,7 +67,36 @@ chmod 700 "$SECRETS_DIR"
 touch "$SECRETS"
 chmod 600 "$SECRETS"
 
+# 레포 루트 .env에 키가 있으면 그 값을 우선 저장한다. 실행(source)하지 않고 해당 키 줄만 읽는다.
+DOTENV="$REPO_DIR/.env"
+dotenv_value() {
+  [ -f "$DOTENV" ] || return 0
+  local line
+  line="$(grep -E "^[[:space:]]*(export[[:space:]]+)?$1=" "$DOTENV" | tail -1 | tr -d '\r')" || true
+  line="${line#*=}"
+  case "$line" in
+    \"*\") line="${line#\"}"; line="${line%\"}" ;;
+    \'*\') line="${line#\'}"; line="${line%\'}" ;;
+  esac
+  printf '%s' "$line"
+}
+
 for key in AI_GATEWAY_API_KEY GEMINI_API_KEY; do
+  value="$(dotenv_value "$key")"
+  if [ -n "$value" ]; then
+    saved="$( . "$SECRETS" 2>/dev/null; printf '%s' "${!key:-}" )"
+    if [ "$saved" = "$value" ]; then
+      echo "key: ${key} 이미 저장됨 (.env와 같음)"
+      continue
+    fi
+    # 키가 든 임시 파일이 잠깐이라도 넓은 권한으로 생기지 않게 umask를 좁혀 만든다.
+    ( umask 077; grep -v "^${key}=" "$SECRETS" > "$SECRETS.tmp" || true )
+    printf '%s=%q\n' "$key" "$value" >> "$SECRETS.tmp"
+    mv "$SECRETS.tmp" "$SECRETS"
+    chmod 600 "$SECRETS"
+    echo "key: ${key} .env 값으로 저장"
+    continue
+  fi
   if grep -q "^${key}=" "$SECRETS"; then
     echo "key: ${key} 이미 저장됨"
     continue
@@ -83,6 +112,6 @@ for key in AI_GATEWAY_API_KEY GEMINI_API_KEY; do
   if [ -n "$value" ]; then
     printf '%s=%q\n' "$key" "$value" >> "$SECRETS"
   else
-    echo "key: ${key} 건너뜀 — 나중에 ./install.sh를 다시 실행하면 입력할 수 있습니다"
+    echo "key: ${key} 건너뜀 — 레포 루트 .env에 넣거나 나중에 ./install.sh를 다시 실행하면 입력할 수 있습니다"
   fi
 done

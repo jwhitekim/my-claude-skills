@@ -37,7 +37,15 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 
 ### API 키
 
-`jev-eval`(`AI_GATEWAY_API_KEY`)과 `gemini-rewrite`(`GEMINI_API_KEY`)는 API 키가 필요합니다. `install.sh`가 키가 없으면 입력받아 `~/.config/my-claude-skills/secrets.env`(권한 600, 레포 밖)에 저장하고, 스크립트들은 환경변수가 없으면 이 파일에서 읽습니다. 지금 셸에 환경변수로 키가 있으면 그 값을 그대로 저장합니다. 입력을 건너뛰었다면 나중에 `./install.sh`를 다시 실행하면 됩니다. 키를 바꾸려면 파일에서 해당 줄을 지우고 다시 실행하세요.
+`jev-eval`(`AI_GATEWAY_API_KEY`)과 `gemini-rewrite`(`GEMINI_API_KEY`)는 API 키가 필요합니다. `install.sh`가 키를 `~/.config/my-claude-skills/secrets.env`(권한 600, 레포 밖)에 저장하고, 스크립트들은 환경변수가 없으면 이 파일에서 읽습니다.
+
+키를 넣는 방법은 세 가지이고, 위에 있는 것이 우선합니다.
+
+1. 레포 루트 `.env`: `cp .env.example .env`로 복사해 값을 채운 뒤 `./install.sh`를 실행합니다. 저장된 값과 다르면 새 값으로 바꿉니다. `.env`는 git에 올라가지 않습니다.
+2. 지금 셸의 환경변수: 아직 저장된 키가 없을 때 그 값을 저장합니다.
+3. 직접 입력: 둘 다 없으면 터미널에서 입력받습니다. 건너뛰었다면 나중에 `./install.sh`를 다시 실행하면 됩니다.
+
+`.env`를 쓰지 않을 때 키를 바꾸려면 secrets 파일에서 해당 줄을 지우고 다시 실행하세요.
 
 `jev-eval`은 직접 구매한 AI Gateway 크레딧이 있어야 동작합니다(무료 플랜 월 $5 크레딧으로는 사용 불가).
 
