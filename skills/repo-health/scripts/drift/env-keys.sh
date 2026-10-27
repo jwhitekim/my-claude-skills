@@ -4,7 +4,10 @@
 set -u
 
 shopt -s nullglob
-FILES=(.env .env.*)
+FILES=()
+for f in .env .env.*; do
+  [ -f "$f" ] && FILES+=("$f")
+done
 shopt -u nullglob
 
 [ "${#FILES[@]}" -lt 2 ] && exit 0

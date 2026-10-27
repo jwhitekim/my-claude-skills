@@ -19,6 +19,9 @@ echo "[repo-health] 훅 등록 (껍데기) - .claude/hooks/repo-health.sh"
 mkdir -p .claude
 [ -f .claude/settings.json ] || echo '{}' > .claude/settings.json
 
-"$PY_BIN" "$S/merge-settings.py" .claude/settings.json
+"$PY_BIN" "$S/merge-settings.py" .claude/settings.json || exit $?
+
+# drift 검사도 repo-health 훅에서 실행하므로 예전 껍데기는 걷어낸다.
+rm -f .claude/hooks/config-drift-guard.sh
 
 echo "[repo-health] 설치 완료. 세션을 재시작(/exit 후 재진입)해야 적용됩니다."

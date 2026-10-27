@@ -18,5 +18,5 @@ fi
 
 TITLES=$(echo "$RESULTS" | grep '^\[config-drift-guard\]')
 COUNT=$(echo "$TITLES" | grep -c '^\[config-drift-guard\]')
-echo "[config-drift-guard] 점검 결과 ${COUNT}건 — 상세: bash ~/.claude/skills/config-drift-guard/scripts/scan.sh detail"
+echo "[config-drift-guard] 점검 결과 ${COUNT}건 — 상세: bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail"
 echo "$TITLES" | sed 's/^/  /'
