@@ -21,6 +21,10 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 
 `install.sh`는 세션 시작 점검 3개(`repo-health`, `watch-rules`, `config-drift-guard`)를 `~/.claude/settings.json`의 `SessionStart`에 등록합니다. 그래서 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돕니다. 다시 실행해도 중복으로 쌓이지 않고, 기존 설정은 `settings.json.bak`에 남습니다. 프로젝트에 같은 스킬의 훅이 이미 깔려 있으면 전역 훅은 건너뜁니다.
 
+### Codex
+
+`codex` 스킬은 Codex CLI와 로그인이 필요합니다. `install.sh`가 CLI를 설치하고(npm이 없고 Homebrew가 있으면 Homebrew로, 둘 다 없으면 nvm으로 Node.js부터), 터미널에서 실행하면 로그인까지 진행합니다. 로그인은 개인 ChatGPT 계정(`codex login`, 브라우저 없는 서버는 `codex login --device-auth`)이나 OpenAI API 키(`codex login --with-api-key`) 중 하나로 합니다.
+
 ### API 키
 
 `jev-eval`(`AI_GATEWAY_API_KEY`)과 `gemini-rewrite`(`GEMINI_API_KEY`)는 API 키가 필요합니다. `install.sh`가 키가 없으면 입력받아 `~/.config/my-claude-skills/secrets.env`(권한 600, 레포 밖)에 저장하고, 스크립트들은 환경변수가 없으면 이 파일에서 읽습니다. 지금 셸에 환경변수로 키가 있으면 그 값을 그대로 저장합니다. 입력을 건너뛰었다면 나중에 `./install.sh`를 다시 실행하면 됩니다. 키를 바꾸려면 파일에서 해당 줄을 지우고 다시 실행하세요.
@@ -41,6 +45,7 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 | `agent-browser` | 크롬 확장 대신 Vercel `agent-browser` CLI로 웹 페이지 열기·클릭·입력·스크린샷. Linux·Mac·Windows 공통, 로그인 상태는 전용 프로필에 유지. 로그인 없는 읽기는 가벼운 lightpanda, 나머지는 Chrome. `install.sh`가 CLI·전용 Chrome·lightpanda를 설치. |
 | `api-contract-guard` | OpenAPI/Swagger 스펙 변경에서 엔드포인트 삭제·필드 required화·타입 변경 같은 breaking change 감지. change-impact가 호출. |
 | `change-impact` | diff를 소스/의존성/API 스펙/마이그레이션/문서 스펙/설정·CI로 분류하고 해당하는 가드만 골라 실행. 가드들을 한 번에 부르는 진입점. |
+| `codex` | Codex CLI를 불러 의견을 주고받고(세션 이어 묻기), 교차검증·문서 검증·프로젝트 리뷰를 맡기고, CLAUDE.md 같은 규칙 문서를 쓰게 함. 기본은 읽기 전용. `install.sh`가 CLI를 설치(Node 없으면 nvm부터). |
 | `commit-and-push` | 코드 변경을 커밋하고 원격에 푸시할 때 사용. 커밋 전 빌드/린트/테스트 검증, 푸시는 사람 확인 후에만. |
 | `config-drift-guard` | `.env*` 파일 간 키 불일치(값은 안 봄)와 CI 워크플로 간 Node/Python 버전 핀 불일치를 세션 시작 시 자동 점검. |
 | `dependency-guard` | lockfile 변경 시 패키지 버전 변경 요약, major 업그레이드 강조, npm 라이선스 위험 확인. change-impact가 호출. |

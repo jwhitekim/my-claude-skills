@@ -51,6 +51,9 @@ command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 # agent-browser 스킬이 쓰는 CLI와 전용 Chrome. 실패해도 나머지 설치는 계속한다.
 bash "$REPO_DIR/skills/agent-browser/scripts/setup.sh" || echo "[agent-browser] 설치 실패 — 나중에 다시 실행하세요"
 
+# codex 스킬이 쓰는 Codex CLI. 터미널에서 실행하면 로그인까지 진행한다.
+bash "$REPO_DIR/skills/codex/scripts/setup.sh" || echo "[codex] 설치 실패 — 나중에 다시 실행하세요"
+
 # API 키는 레포 밖 비밀 파일에 둔다. jev-eval/gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
 SECRETS="$SECRETS_DIR/secrets.env"
