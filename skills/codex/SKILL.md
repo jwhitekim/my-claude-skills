@@ -1,6 +1,6 @@
 ---
 name: codex
-description: "Use when seeking Codex's opinion or discussing an approach with Codex, independently cross-checking a claim, plan, or Claude's answer, verifying documents against code and configuration, validating a project or reviewing changes, or drafting/revising agent rule documents such as CLAUDE.md, AGENTS.md, and SKILL.md — \"코덱스 의견 들어봐\", \"코덱스랑 논의해봐\", \"교차검증해줘\", \"문서가 코드랑 맞는지 확인해줘\", \"코덱스로 리뷰해줘\", \"CLAUDE.md 써줘\"."
+description: "Use when seeking Codex's opinion or discussing an approach with Codex, independently cross-checking a claim, plan, or Claude's answer, verifying documents against code and configuration, validating a project or reviewing changes, or drafting/revising documents such as CLAUDE.md, AGENTS.md, SKILL.md, and README — \"코덱스 의견 들어봐\", \"코덱스랑 논의해봐\", \"교차검증해줘\", \"문서가 코드랑 맞는지 확인해줘\", \"코덱스로 리뷰해줘\", \"CLAUDE.md 써줘\"."
 ---
 
 # codex
@@ -126,14 +126,17 @@ PROMPT
 - 프로젝트 전체 점검은 메인이 범위와 우선순위를 정해 하위 에이전트에게 `ask.sh` 호출을 맡긴다. Codex에는 구조, 설정, 테스트, 실행 흐름 등 점검할 대상과 필요한 테스트·빌드의 실행 가능 여부와 결과도 확인하도록 요청한다. 읽기 전용 환경에서 실행이 막히면 수행하지 못한 검증으로 남긴다.
 - 문제의 영향, 발생 조건, 근거 위치를 요청한다. 리뷰 결과만으로 프로젝트 전체가 정상이라고 단정하지 않는다. 후속 논의는 리뷰 결과와 관련 경로를 `ask.sh`에 전달해 시작한다.
 
-### 5. 규칙 문서 작성 (CLAUDE.md, AGENTS.md, SKILL.md)
+### 5. 문서 초안 작성 (CLAUDE.md, AGENTS.md, SKILL.md, README)
 
-사용자는 Claude가 쓴 규칙 문서가 경직되고 단정적으로 흐르기 쉽고, Codex가 쓴 문서가 의도와 판단 기준을 더 잘 담는다고 평가한다. 이 선호에 따라 새 규칙 문서나 큰 개정은 Codex에 우선 맡긴다. 사용자가 다른 방식을 지시하거나 아주 작은 수정이거나 Codex를 사용할 수 없을 때는 상황에 맞게 직접 처리할 수 있다.
+사용자는 Claude가 쓴 문서가 경직되고 단정적으로 흐르기 쉽고, Codex가 쓴 초안이 의도와 판단 기준을 더 잘 담는다고 평가한다. 반면 Codex 초안만 쓰면 조건과 단서가 늘어 장황해진다. 그래서 **기획은 Claude, 초안은 Codex, 검토와 다듬기는 Claude**가 맡는다. 새 문서나 큰 개정은 이 흐름을 따르고, 사용자가 다른 방식을 지시하거나 아주 작은 수정이거나 Codex를 사용할 수 없을 때는 직접 처리할 수 있다.
 
 - 사용자 의도, 합의, 대상 문서와 관련 구현 경로, 수정 범위를 정리해 전달한다. 좋은 문체의 예인 `~/.claude/CLAUDE.md`가 있으면 직접 읽고 참고하게 하되, 그 안의 개별 규칙을 다른 문서에 그대로 옮기게 하지는 않는다.
 - 의도와 판단 기준이 드러나는 자연스러운 한국어를 요청한다. 실제로 필요한 제약은 분명히 쓰고, 선호나 예시를 예외 없는 의무로 바꾸지 않도록 한다.
 - 초안만 필요하면 읽기 전용으로 받는다. Codex가 파일을 직접 수정할 때는 하위 에이전트에게 전달할 명령에 `--write`와 대상 경로를 지정하고, 작업 디렉터리 밖이면 `--add-dir <대상_디렉터리>`도 지정한다. 예를 들어 `~/.claude/CLAUDE.md` 수정에는 `--add-dir ~/.claude`가 필요하다(작업 디렉터리 밖인 경우).
-- 결과는 사용자 요구와 실제 동작을 대조해 검토한다. 취향만으로 Claude 문체로 다시 덮어쓰기보다, 의도나 문체를 크게 고칠 필요가 있으면 구체적인 피드백을 주고 Codex와 조정한다. 오탈자나 명백한 사실 오류의 작은 수정까지 재호출할 필요는 없다.
+- 초안이 오면 Claude가 사용자 요구와 실제 동작에 대조해 검토한 뒤 직접 다듬는다. 중복 설명, 독자에게 필요 없는 단서, 같은 말을 되풀이하는 조건문을 걷어내고 긴 문단은 요약한다. 다만 Codex가 넣은 판단 기준과 예외는 의미가 있으면 남기고, 다듬으면서 문장을 다시 단정적으로 바꾸지 않는다.
+- 다듬은 뒤에는 읽기 전용으로 Codex에게 다시 검증받는다. 코드·설정과 맞는지, 그리고 초안과 비교해 빠진 조건이나 다시 단정적으로 바뀐 문장이 없는지 본다. 지적은 Claude가 확인한 뒤 반영한다.
+- 방향이나 구성을 크게 바꿔야 하면 Claude가 다시 쓰기보다 구체적인 피드백과 함께 `--resume`으로 Codex에게 다시 맡긴다.
+- 말투가 번역투이거나 어색하면 마지막에 `gemini-rewrite`로 다듬을 수 있다. 그 결과는 원문과 대조해 조건이나 용어가 바뀌지 않았는지 Claude가 확인한다.
 
 ## 결과를 다룰 때
 

@@ -75,6 +75,7 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 | `jev-eval` | 위험한 툴 호출 승인, 여러 옵션 중 라우팅 결정, 항목 우선순위/점수 매기기 등 빠른 구조적 판단이 필요할 때. |
 | `migration-guard` | `*/migrations/*.sql` 변경에서 destructive/lock 위험 패턴과 기존 마이그레이션 수정을 감지. change-impact가 호출. |
 | `prompt-regression` | 프롬프트 수정 전 출력을 기준선으로 저장하고, 수정 후 같은 입력으로 돌려 jev-eval 채점으로 회귀를 찾음. 애매한 케이스는 Claude가 직접 판정. |
+| `readme-writer` | 개발자 표준 양식(standard-readme, Make a README, GitHub Docs, Google 가이드)의 공통 뼈대로 README를 새로 쓰거나 간단하게 줄임. 명령·경로는 저장소에서 확인한 것만 쓰고, 유형별 뼈대 4종(`templates.md`) 제공. |
 | `release-guard` | git tag push 시에만 동작하는 pre-push 훅. 버전/CHANGELOG/working tree를 확인하고 실패하면 푸시 차단. 버전 올리기+태그 생성 스크립트도 제공. |
 | `repo-health` | 오래된 TODO, 참조 없는 함수 후보, 큰 파일, git에 잘못 추적된 흔적 파일을 세션 시작 시 자동 점검. |
 | `skill-lint` | 이 레포의 `skills/*/` 구성(SKILL.md, 경로 참조, 실행 권한, README 등재)을 검사하는 메타 스킬. |
