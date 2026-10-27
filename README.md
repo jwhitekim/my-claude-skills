@@ -21,6 +21,15 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 
 `install.sh`는 세션 시작 점검 3개(`repo-health`, `watch-rules`, `config-drift-guard`)를 `~/.claude/settings.json`의 `SessionStart`에 등록합니다. 그래서 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돕니다. 다시 실행해도 중복으로 쌓이지 않고, 기존 설정은 `settings.json.bak`에 남습니다. 프로젝트에 같은 스킬의 훅이 이미 깔려 있으면 전역 훅은 건너뜁니다.
 
+### 팀장·직원 운영 방식
+
+`install.sh`는 메인 Claude(팀장)가 추론·판단을 맡고 잡일은 하위 에이전트(직원)에게 맡기는 방식을 전역 설정에 적용합니다(`scripts/team-policy.py`).
+
+- `~/.claude/settings.json`의 `env`에 `CLAUDE_CODE_SUBAGENT_MODEL=haiku`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`을 넣어 직원 모델을 항상 Haiku로 고정합니다. FORCE가 켜지면 Agent 도구의 `model` 옵션과 에이전트 정의의 모델 지정이 무시됩니다.
+- `policies/team-policy.md`의 역할 분담 규칙을 `~/.claude/CLAUDE.md`에 표시선 블록으로 넣습니다. 블록 밖 내용은 그대로 두고, 다시 실행하면 블록만 갱신합니다.
+- 바꾸기 전 파일은 `.bak`으로 남깁니다. 되돌리려면 `python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE.md`를 실행하세요.
+- 새 Claude Code 세션부터 적용됩니다.
+
 ### Codex
 
 `codex` 스킬은 Codex CLI와 로그인이 필요합니다. `install.sh`가 CLI를 설치하고(npm이 없고 Homebrew가 있으면 Homebrew로, 둘 다 없으면 nvm으로 Node.js부터), 터미널에서 실행하면 로그인까지 진행합니다. 로그인은 개인 ChatGPT 계정(`codex login`, 브라우저 없는 서버는 `codex login --device-auth`)이나 OpenAI API 키(`codex login --with-api-key`) 중 하나로 합니다.
