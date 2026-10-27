@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # diff를 영향 범위별로 분류하고, 해당하는 가드 스크립트만 실행한다.
-# 아무것도 막지 않는다 — 각 가드의 결과를 모아 보여줄 뿐이다.
+# 각 가드의 결과를 모아 보여주고, 실패한 가드가 있으면 non-zero로 끝난다.
 # 사용법: impact.sh [staged|last]  (기본 staged)
 set -u
 
@@ -15,8 +15,8 @@ fi
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
 case "$MODE" in
-  staged) CHANGED=$(git diff --cached --name-only --diff-filter=ACMR) ;;
-  last)   CHANGED=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD 2>/dev/null) ;;
+  staged) CHANGED=$(git diff --cached --name-only --diff-filter=ACMRD) ;;
+  last)   CHANGED=$(git diff --name-only --diff-filter=ACMRD HEAD~1 HEAD 2>/dev/null) ;;
   *)      echo "[change-impact] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
 esac
 
@@ -47,10 +47,15 @@ has "$CONFIG"    && AREAS="$AREAS 설정/CI"
 COUNT=$(echo "$CHANGED" | wc -l | tr -d ' ')
 echo "[change-impact] 변경 파일 ${COUNT}개 — 영향 범위:${AREAS:- 해당 가드 없음}"
 
+FAILED=""
 run() {
   local title="$1"; shift
-  local out
+  local out status
   out=$("$@" 2>&1)
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    FAILED="${FAILED}${FAILED:+, }${title} (종료 코드 ${status})"
+  fi
   if [ -n "$out" ]; then
     echo
     echo "== ${title} =="
@@ -70,3 +75,10 @@ if echo "$CHANGED" | grep -qE '^\.github/workflows/'; then
   echo
   echo "[change-impact] CI 워크플로가 바뀌었습니다 — 푸시 후 deploy-status로 배포 결과를 확인하세요."
 fi
+
+if [ -n "$FAILED" ]; then
+  echo
+  echo "[change-impact] 실패한 가드: $FAILED"
+  exit 1
+fi
+exit 0

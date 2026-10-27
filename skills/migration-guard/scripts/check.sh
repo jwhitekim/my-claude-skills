@@ -37,7 +37,9 @@ TOTAL=0
 
 while IFS= read -r file; do
   [ -z "$file" ] && continue
-  out=$(bash "$_DIR/check-sql.sh" "$file")
+  out=$(bash "$_DIR/check-sql.sh" "$file" "$MODE")
+  status=$?
+  [ "$status" -gt 1 ] && exit "$status"
   if [ -n "$out" ]; then
     echo "[migration-guard] ${file}:"
     echo "$out"
