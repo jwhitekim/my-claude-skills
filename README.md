@@ -26,6 +26,7 @@ git clone <repo-url> ~/CODINGPROJECT/my-claude-skills
 `install.sh`는 메인 Claude(팀장)가 추론·판단을 맡고 잡일은 하위 에이전트(직원)에게 맡기는 방식을 전역 설정에 적용합니다(`scripts/team-policy.py`).
 
 - `~/.claude/settings.json`의 `env`에 `CLAUDE_CODE_SUBAGENT_MODEL=haiku`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`을 넣어 직원 모델을 항상 Haiku로 고정합니다. FORCE가 켜지면 Agent 도구의 `model` 옵션과 에이전트 정의의 모델 지정이 무시됩니다.
+- 같은 파일에 `"attribution": {"commit": "", "pr": ""}`를 넣어 커밋·PR에 Claude 서명(`Co-Authored-By` 등)을 붙이지 않습니다.
 - `policies/team-policy.md`의 역할 분담 규칙을 `~/.claude/CLAUDE.md`에 표시선 블록으로 넣습니다. 블록 밖 내용은 그대로 두고, 다시 실행하면 블록만 갱신합니다.
 - 바꾸기 전 파일은 `.bak`으로 남깁니다. 되돌리려면 `python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE.md`를 실행하세요.
 - 새 Claude Code 세션부터 적용됩니다.
