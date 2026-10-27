@@ -1,21 +1,27 @@
 ---
 name: deploy-status
-description: "Use right after pushing to a project with a GitHub Actions deployment pipeline, or when asked \"배포 상태 확인해줘\", \"배포 잘 됐나 확인\", \"방금 푸시한 거 배포 성공했어?\", including when a deployment failed and needs diagnosis."
+description: "Use right after pushing to a project with a GitHub Actions deployment pipeline to check deployment status or diagnose failures, or when asked to write a postmortem after an outage, failed deployment, or production incident — \"배포 상태 확인해줘\", \"배포 잘 됐나 확인\", \"방금 푸시한 거 배포 성공했어?\", \"장애 회고 써줘\", \"아까 배포 터진 거 정리해줘\", \"incident review\"."
 ---
 
 # deploy-status
 
 `git push`가 GitHub Actions 배포를 트리거하는 프로젝트에서, 배포가 끝날 때까지 사람이
 Actions 탭을 직접 열어보지 않아도 되게 한다. `gh` CLI로 확인하고, 실패 시 로그를 읽어
-원인을 진단한다.
+원인을 진단한다. 장애·배포 실패 회고를 요청받으면 커밋·Actions 실행·실패 로그를 모아
+회고 문서를 작성한다.
 
 ## 전제조건
 
+아래는 배포 상태 확인·실패 진단의 전제조건이다. 장애 회고 작성은 `gh`나 GitHub 원격,
+워크플로가 없어도 확보한 커밋·사용자 제공 로그로 진행하고, 빠진 근거를 밝힌다.
+
 - `gh` CLI가 설치되어 있고 인증돼 있어야 한다 (`gh auth status`로 확인, 안 돼 있으면
   사람에게 `gh auth login`을 직접 실행하라고 안내 — 로그인은 사람이 한다).
-- 프로젝트에 `.github/workflows/*.yml` 또는 `*.yaml`이 있어야 한다. 없으면 이 스킬을 쓸 대상이 아니다.
+- 프로젝트에 `.github/workflows/*.yml` 또는 `*.yaml`이 있어야 한다. 없으면 배포 상태 확인 대상이 아니다.
 
 ## 절차
+
+배포 상태 확인·실패 진단은 1~4를 따른다. 회고 요청은 아래 **장애 회고 작성** 하위 절차를 따른다.
 
 1. **워크플로 실행 찾기**
 
@@ -80,6 +86,14 @@ Actions 탭을 직접 열어보지 않아도 되게 한다. `gh` CLI로 확인�
      수정도 같은 방식(수정안 제시 → 승인 → 커밋)으로 처리한다.
    - 원인이 이 저장소 밖(예: 배포 대상 인프라, 외부 서비스 장애)이면 로그 근거와 함께
      사람에게 보고하고 직접 처리하도록 안내한다 — 인프라 설정은 이 스킬의 범위 밖이다.
+
+### 장애 회고 작성
+
+회고를 요청받으면 [장애 회고 작성 절차와 문서 양식](incident.md)을 읽고 따른다.
+장애 시각과 증상을 확인하고 `scripts/incident/collect.sh`로 재료를 모은 뒤,
+`docs/incidents/YYYY-MM-DD-<짧은-영문-제목>.md`에 저장한다.
+로그·커밋으로 확인한 사실과 추측을 구분하고, 사람을 탓하지 않으며 실행 가능한 액션 아이템을 쓴다.
+회고 작성 중 장애 수정은 별도로 진행한다.
 
 ## 하지 않는 것
 

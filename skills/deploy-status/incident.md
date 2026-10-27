@@ -1,9 +1,4 @@
----
-name: incident-review
-description: "Use after an outage, failed deployment, or production incident when the user wants a postmortem written — \"장애 회고 써줘\", \"아까 배포 터진 거 정리해줘\", \"incident review\"."
----
-
-# incident-review
+# 장애 회고 작성
 
 장애 회고 문서를 쓰는 데 필요한 재료를 모으고, 정해진 양식으로 정리한다. 누구 탓인지가
 아니라 **무엇이 문제였고 어떻게 막을지**에 초점을 둔다(blameless).
@@ -20,7 +15,7 @@ description: "Use after an outage, failed deployment, or production incident whe
 ## 2. 재료 모으기
 
 ```bash
-bash ~/.claude/skills/incident-review/scripts/collect.sh "<장애 시각>" [앞뒤 범위 시간, 기본 24]
+bash ~/.claude/skills/deploy-status/scripts/incident/collect.sh "<장애 시각>" [앞뒤 범위 시간, 기본 24]
 ```
 
 - 범위 안의 **커밋** 목록 (모든 브랜치)
@@ -73,10 +68,10 @@ bash ~/.claude/skills/incident-review/scripts/collect.sh "<장애 시각>" [앞�
 - **사람을 탓하지 않는다.** "누가 실수했다"가 아니라 "어떤 장치가 없어서 실수가 그대로
   나갔다"로 쓴다.
 - **액션 아이템은 실행 가능한 크기로.** "더 조심하기" 같은 건 쓰지 않는다. 테스트 추가, 가드
-  스킬 설치(예: `config-drift-guard`, `release-guard`)처럼 구체적인 것만 쓴다.
+  스킬 설치(예: `repo-health`, `release-guard`)처럼 구체적인 것만 쓴다.
 - 문서를 쓴 뒤 액션 아이템 중 지금 바로 할 것이 있는지 사용자에게 묻는다.
 
 ## 하지 않는 것
 
 - **Vercel/서버 런타임 로그 자동 수집은 하지 않는다.** 사용자가 붙여넣은 것만 쓴다.
-- **장애를 직접 고치지 않는다.** 회고 문서를 쓰는 스킬이다 — 수정이 필요하면 별도로 진행한다.
+- **장애를 직접 고치지 않는다.** 이 하위 절차는 회고 문서 작성만 담당한다 — 수정이 필요하면 별도로 진행한다.
