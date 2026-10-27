@@ -13,19 +13,27 @@ fi
 
 MSG="$1"; shift
 
+is_sensitive() {
+  local file="$1"
+  if [[ "$file" =~ (^|/)secrets/|\.pem$|id_rsa$|\.key$ ]]; then
+    return 0
+  fi
+  case "${file##*/}" in
+    .env.example|.env.sample|.env.template) return 1 ;;
+  esac
+  [[ "$file" =~ (^|/)\.env(\..*)?$ ]]
+}
+
 for f in "$@"; do
-  if echo "$f" | grep -Eq '(^|/)\.env(\..*)?$|(^|/)secrets/|\.pem$|id_rsa$|\.key$'; then
+  if is_sensitive "$f"; then
     echo "REFUSED: '$f'는 민감 파일 패턴(.env/secrets//.pem/.key/id_rsa)입니다. 커밋 대상에서 빼고 다시 실행하세요." >&2
     exit 1
   fi
 done
 
-# 경로별로 add한다. 이미 삭제가 완전히 스테이징된 경로(워킹트리·인덱스 양쪽에
-# 더 이상 존재하지 않음)는 git이 "pathspec did not match any files"로 거부하는데,
-# 이 경우는 이미 원하는 상태라 실패로 취급하지 않는다 — 진짜 실패(경로 오타 등)는
-# 아래 "커밋할 게 없음" 체크가 잡아낸다.
+# 경로별로 add한다. 경로 오타 등으로 하나라도 실패하면 커밋하지 않는다.
 for f in "$@"; do
-  git add -A -- "$f" 2>/dev/null || true
+  git add -A -- "$f"
 done
 
 if git diff --cached --quiet; then
@@ -33,12 +41,38 @@ if git diff --cached --quiet; then
   exit 1
 fi
 
-# 디렉터리 인자 안의 파일과 기존 staged 파일까지 실제 커밋 대상을 검사한다.
+# Git이 경로 인자를 해석한 결과와 전체 staged 목록을 비교한다. 디렉터리·pathspec도
+# 지원하고, rename은 이전/새 경로를 따로 검사해 범위 밖 삭제가 섞이지 않게 한다.
+STAGED_FILES=()
+EXPECTED_FILES=()
 while IFS= read -r -d '' f; do
-  if [[ "$f" =~ (^|/)\.env(\..*)?$|(^|/)secrets/|\.pem$|id_rsa$|\.key$ ]]; then
+  STAGED_FILES+=("$f")
+done < <(git diff --cached --name-only --no-renames -z)
+while IFS= read -r -d '' f; do
+  EXPECTED_FILES+=("$f")
+done < <(git diff --cached --name-only --no-renames -z -- "$@")
+
+if [ "${#STAGED_FILES[@]}" -ne "${#EXPECTED_FILES[@]}" ]; then
+  echo "REFUSED: staged 목록이 지정한 파일 집합과 다릅니다. 커밋하지 않습니다." >&2
+  echo "지정한 경로의 staged 파일:" >&2
+  printf '  %q\n' "${EXPECTED_FILES[@]}" >&2
+  echo "지정한 경로 밖의 staged 파일:" >&2
+  for f in "${STAGED_FILES[@]}"; do
+    found=0
+    for expected in "${EXPECTED_FILES[@]}"; do
+      if [ "$f" = "$expected" ]; then found=1; break; fi
+    done
+    if [ "$found" -eq 0 ]; then printf '  %q\n' "$f" >&2; fi
+  done
+  exit 1
+fi
+
+# 디렉터리 인자 안의 파일과 기존 staged 파일까지 실제 커밋 대상을 검사한다.
+for f in "${STAGED_FILES[@]}"; do
+  if is_sensitive "$f"; then
     echo "REFUSED: staged 파일 '$f'는 민감 파일 패턴입니다. 커밋 대상에서 빼세요." >&2
     exit 1
   fi
-done < <(git diff --cached --name-only -z)
+done
 
 git commit -m "$MSG"

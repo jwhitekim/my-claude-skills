@@ -55,7 +55,8 @@ bash ~/.claude/skills/commit-and-push/scripts/check-staged.sh
 ```
 
 staged 파일 목록과, 그 중 `.env`/`secrets/`/`*.pem`/`*.key`/`id_rsa` 패턴에 걸리는 항목을
-따로 보여준다. **경고 항목이 나오면 그 파일은 어떤 경우에도 커밋 대상에서 제외한다.**
+따로 보여준다. **경고 항목이 나오면 그 파일은 커밋 대상에서 제외한다.** 단,
+`.env.example`/`.env.sample`/`.env.template`은 예제 파일로 허용한다(`secrets/` 안은 제외).
 
 이 스크립트가 못 하는 것 — 여기서부터는 Claude가 직접 판단한다:
 - **staged 목록이 이번 작업 범위와 의미상 맞는지.** 사이드 이펙트로 건드려진 파일이
@@ -92,6 +93,10 @@ staged 파일 목록과, 그 중 `.env`/`secrets/`/`*.pem`/`*.key`/`id_rsa` 패�
 ```bash
 bash ~/.claude/skills/commit-and-push/scripts/safe-commit.sh "{type}: {what}" <file1> [file2 ...]
 ```
+
+`git add`가 실패하면 즉시 중단하고, 지정한 경로의 staged 파일 집합과 전체 staged
+목록이 다르면 차이를 보여주고 거부한다. `.env.example`/`.env.sample`/`.env.template`은
+예제 파일로 허용한다(`secrets/` 안은 제외).
 
 ## 4. 푸시 — 검증 게이트 + 사람 확인 게이트
 

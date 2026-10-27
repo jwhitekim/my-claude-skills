@@ -25,9 +25,11 @@ bash ~/.claude/skills/release-guard/scripts/setup.sh
 
 | 항목 | 내용 | 해당 파일/항목이 없으면 |
 |---|---|---|
-| 버전 파일 일치 | `package.json`/`VERSION`/`pyproject.toml`의 버전과 태그 이름(`v` 제외)이 같은지 | 건너뜀 |
-| CHANGELOG 항목 | `CHANGELOG.md`에 해당 버전 문자열이 있는지 | `CHANGELOG.md` 자체가 없으면 건너뜀 |
-| working tree | `git status --porcelain`이 비어있는지 | — |
+| 버전 파일 일치 | 각 태그의 커밋 트리에 있는 `package.json`/`VERSION`/`pyproject.toml`의 버전과 태그 이름(`v` 제외)이 같은지 | 건너뜀 |
+| CHANGELOG 항목 | 각 태그의 커밋 트리에 있는 `CHANGELOG.md`에 해당 버전 문자열이 있는지 | `CHANGELOG.md` 자체가 없으면 건너뜀 |
+
+태그 삭제는 건너뛴다. 태그가 가리키는 커밋만 검사하므로 현재 working tree의 미커밋
+변경은 태그 푸시를 막지 않는다.
 
 하나라도 실패하면 푸시를 **차단**한다(`exit 1`). 급하면 `git push --no-verify`로 우회
 가능 — 훅은 안전장치일 뿐 강제가 아니다.
@@ -44,6 +46,8 @@ bash ~/.claude/skills/release-guard/scripts/bump-version.sh <새버전> ["변경
 
 - 버전 파일을 갱신하고, `CHANGELOG.md` 맨 위에 새 항목을 추가하고, `release: vX.Y.Z`
   커밋을 만들고, `vX.Y.Z` annotated 태그를 단다.
+- 스크립트가 갱신한 버전 파일과 `CHANGELOG.md`만 add·커밋한다. 다른 파일의 미커밋
+  변경은 이미 staged된 경우에도 포함하지 않는다.
 - **푸시는 하지 않는다.** `git push && git push --tags`는 사용자가 직접 하거나 별도
   확인 후 진행한다.
 

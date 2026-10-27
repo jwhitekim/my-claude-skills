@@ -6,57 +6,51 @@ set -u
 
 FAIL=0
 
-read_tags() {
-  while read -r local_ref local_sha remote_ref remote_sha; do
-    case "$local_ref" in
-      refs/tags/*)
-        echo "${local_ref#refs/tags/}"
-        ;;
-    esac
-  done
-}
-
 version_from_file() {
-  if [ -f package.json ]; then
-    grep -m1 '"version"' package.json | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
-  elif [ -f VERSION ]; then
-    tr -d '[:space:]' < VERSION
-  elif [ -f pyproject.toml ]; then
-    grep -m1 '^version' pyproject.toml | sed -E 's/version[[:space:]]*=[[:space:]]*"([^"]+)"/\1/'
+  local commit="$1"
+  if git cat-file -e "${commit}:package.json" 2>/dev/null; then
+    git show "${commit}:package.json" | grep -m1 '"version"' | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+  elif git cat-file -e "${commit}:VERSION" 2>/dev/null; then
+    git show "${commit}:VERSION" | tr -d '[:space:]'
+  elif git cat-file -e "${commit}:pyproject.toml" 2>/dev/null; then
+    git show "${commit}:pyproject.toml" | grep -m1 '^version' | sed -E 's/version[[:space:]]*=[[:space:]]*"([^"]+)"/\1/'
   fi
 }
 
 check_tag() {
   local tag="$1"
+  local sha="$2"
   local ver="${tag#v}"
 
+  local commit
+  if ! commit="$(git rev-parse --verify "${sha}^{commit}" 2>/dev/null)"; then
+    echo "[release-guard] 태그(${tag})의 커밋을 읽을 수 없습니다."
+    FAIL=1
+    return
+  fi
+
   local file_ver
-  file_ver="$(version_from_file)"
+  file_ver="$(version_from_file "$commit")"
   if [ -n "$file_ver" ] && [ "$file_ver" != "$ver" ]; then
     echo "[release-guard] 버전 파일(${file_ver})과 태그(${tag})가 다릅니다."
     FAIL=1
   fi
 
-  if [ -f CHANGELOG.md ]; then
-    if ! grep -qE "(^|[^0-9])${ver//./\\.}([^0-9]|$)" CHANGELOG.md; then
+  if git cat-file -e "${commit}:CHANGELOG.md" 2>/dev/null; then
+    if ! git show "${commit}:CHANGELOG.md" | grep -qE "(^|[^0-9])${ver//./\\.}([^0-9]|$)"; then
       echo "[release-guard] CHANGELOG.md에 ${ver} 항목이 없습니다."
       FAIL=1
     fi
   fi
-
-  if [ -n "$(git status --porcelain)" ]; then
-    echo "[release-guard] working tree가 깨끗하지 않습니다 (커밋 안 된 변경 있음)."
-    FAIL=1
-  fi
 }
 
-TAGS="$(read_tags)"
-[ -z "$TAGS" ] && exit 0
-
-while IFS= read -r tag; do
-  [ -z "$tag" ] && continue
-  check_tag "$tag"
-done <<< "$TAGS"
+# 작업 트리 대신 푸시하는 각 태그의 커밋 트리를 검사한다. 삭제 푸시는 건너뛴다.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ "$local_sha" =~ ^0+$ ]] && continue
+  case "$local_ref" in
+    refs/tags/*) check_tag "${local_ref#refs/tags/}" "$local_sha" ;;
+  esac
+done
 
 if [ "$FAIL" -eq 1 ]; then
   echo "[release-guard] 체크리스트 실패 — 푸시를 차단합니다. (bypass: git push --no-verify)"
