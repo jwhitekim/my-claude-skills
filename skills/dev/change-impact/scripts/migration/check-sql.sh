@@ -11,7 +11,7 @@ case "$MODE" in
   file) [ -f "$FILE" ] || exit 0; CONTENT=$(cat "$FILE") || exit 2 ;;
   staged) CONTENT=$(git show ":$FILE") || exit 2 ;;
   last) CONTENT=$(git show "HEAD:$FILE") || exit 2 ;;
-  *) echo "[migration-guard] 알 수 없는 모드: $MODE (file|staged|last)" >&2; exit 2 ;;
+  *) echo "[change-impact:migration] 알 수 없는 모드: $MODE (file|staged|last)" >&2; exit 2 ;;
 esac
 
 STATEMENTS=$(awk '

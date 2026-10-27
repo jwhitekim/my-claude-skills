@@ -62,7 +62,7 @@
     "state": "repo-health가 설치되어 있고 .env.dev와 .env.prod의 키가 다름",
     "expected_behavior": [
       "bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail을 실행한다",
-      "키 불일치 결과를 보여주되 환경변수 값은 출력하거나 추측하지 않는다"
+      "[repo-health:drift] 표지의 키 불일치 결과를 보여주되 환경변수 값은 출력하거나 추측하지 않는다"
     ]
   },
   {

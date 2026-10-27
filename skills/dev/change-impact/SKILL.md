@@ -54,7 +54,7 @@ bash ~/.claude/skills/change-impact/scripts/test-gap/find-gaps.sh staged
 bash ~/.claude/skills/change-impact/scripts/test-gap/find-gaps.sh last
 ```
 
-[test-gap.md](test-gap.md)를 읽고 후보 목록을 받은 뒤 diff를 직접 검토한다.
+[test-gap.md](test-gap.md)를 읽고 `[change-impact:test-gap]` 표지의 후보 목록을 받은 뒤 diff를 직접 검토한다.
 파일 존재 여부와 실제 커버 여부를 구분하고, 테스트 작성이 요청되면 기존 테스트 스타일을
 참고해 정상·분기·엣지케이스를 작성한 뒤 실제로 실행해 통과를 확인한다.
 
@@ -67,7 +67,7 @@ bash ~/.claude/skills/change-impact/scripts/migration/check.sh staged
 bash ~/.claude/skills/change-impact/scripts/migration/check.sh last
 ```
 
-[migration.md](migration.md)의 위험 패턴과 휴리스틱 한계를 읽고 결과를 해석한다.
+[migration.md](migration.md)의 위험 패턴과 휴리스틱 한계를 읽고 `[change-impact:migration]` 표지의 결과를 해석한다.
 새 SQL의 destructive/lock 패턴과 기존 마이그레이션 수정을 알리며, 최종 판단은 사용자에게
 맡긴다. DB 실행·롤백이나 스키마와 애플리케이션 코드의 정합성 검사는 수행하지 않는다.
 

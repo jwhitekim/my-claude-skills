@@ -23,7 +23,7 @@ case "$MODE" in
     MODIFIED=$(git diff --name-only --diff-filter=M HEAD~1 HEAD 2>/dev/null)
     ;;
   *)
-    echo "[migration-guard] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
+    echo "[change-impact:migration] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
 esac
 
 PATTERN='(^|/)migrations/[^/]+\.sql$'
@@ -41,7 +41,7 @@ while IFS= read -r file; do
   status=$?
   [ "$status" -gt 1 ] && exit "$status"
   if [ -n "$out" ]; then
-    echo "[migration-guard] ${file}:"
+    echo "[change-impact:migration] ${file}:"
     echo "$out"
     TOTAL=$((TOTAL + 1))
   fi
@@ -49,7 +49,7 @@ done <<< "$ADDED_MIGRATIONS"
 
 while IFS= read -r file; do
   [ -z "$file" ] && continue
-  echo "[migration-guard] ${file}: 이미 존재하던 마이그레이션 파일을 수정 중입니다 — 이미 적용된 환경(로컬/스테이징/운영)에는 반영되지 않습니다. 새 마이그레이션 파일을 추가하는 걸 권장합니다."
+  echo "[change-impact:migration] ${file}: 이미 존재하던 마이그레이션 파일을 수정 중입니다 — 이미 적용된 환경(로컬/스테이징/운영)에는 반영되지 않습니다. 새 마이그레이션 파일을 추가하는 걸 권장합니다."
   TOTAL=$((TOTAL + 1))
 done <<< "$MODIFIED_MIGRATIONS"
 

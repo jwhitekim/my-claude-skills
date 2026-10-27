@@ -7,13 +7,13 @@ set -uo pipefail
 MODE="${1:-staged}"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "[test-gap-finder] git 저장소가 아닙니다."
+  echo "[change-impact:test-gap] git 저장소가 아닙니다."
   exit 0
 fi
 case "$MODE" in
   staged) CHANGED=$(git diff --cached --name-only --diff-filter=ACMR) || exit 1 ;;
   last) CHANGED=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD) || exit 1 ;;
-  *) echo "[test-gap-finder] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
+  *) echo "[change-impact:test-gap] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
 esac
 [ -z "$CHANGED" ] && exit 0
 
@@ -45,5 +45,5 @@ while IFS= read -r file; do
 done <<< "$CHANGED"
 
 if [ "$GAPS" -gt 0 ]; then
-  echo "[test-gap-finder] 대응 테스트 파일이 없는 검토 후보 ${GAPS}건"
+  echo "[change-impact:test-gap] 대응 테스트 파일이 없는 검토 후보 ${GAPS}건"
 fi

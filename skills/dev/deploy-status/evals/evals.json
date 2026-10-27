@@ -56,5 +56,13 @@
       "collect.sh가 Actions 부분을 건너뛰어도 커밋 기록만으로 회고를 진행한다",
       "Actions 기록이 빠졌다는 점을 문서나 답변에 밝힌다"
     ]
+  },
+  {
+    "skills": ["deploy-status"],
+    "query": "장애 회고 재료 모아줘",
+    "state": "git 저장소 밖에서 collect.sh를 실행함",
+    "expected_behavior": [
+      "collect.sh가 [deploy-status:incident] git 저장소가 아닙니다. 오류를 출력하고 종료 코드 1로 끝난다"
+    ]
   }
 ]

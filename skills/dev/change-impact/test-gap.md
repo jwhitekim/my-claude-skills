@@ -17,6 +17,11 @@ bash ~/.claude/skills/change-impact/scripts/test-gap/find-gaps.sh last     # 마
 
 스크립트는 파일 존재만 본다. 출력 형식은 다음과 같다.
 
+```text
+  - src/example.py: 대응 테스트 파일 없음 — 후보
+[change-impact:test-gap] 대응 테스트 파일이 없는 검토 후보 1건
+```
+
 | 출력 | 의미 |
 |---|---|
 | `대응 테스트 파일 있음: <경로> (커버 여부 미검증)` | 같은 이름의 테스트 파일이 추적 중이다. 커버 여부는 확인하지 않았다 |

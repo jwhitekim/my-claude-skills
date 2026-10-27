@@ -18,6 +18,13 @@ bash ~/.claude/skills/change-impact/scripts/migration/check.sh last     # 마지
 SQL 내용도 staged는 인덱스(`git show :<path>`), last는 마지막 커밋(`git show HEAD:<path>`)에서
 읽는다. 작업 파일의 미반영 변경은 검사에 섞지 않는다.
 
+출력 예시:
+
+```text
+[change-impact:migration] supabase/migrations/001.sql:
+  - [DESTRUCTIVE] DROP TABLE 발견 — 테이블 전체 삭제, 되돌릴 수 없음
+```
+
 ## 새로 추가된 마이그레이션 — destructive/lock 패턴
 
 `--`, `/* */` 주석을 제거하고 `;`로 나눈 문장의 공백·줄바꿈을 정규화해 검사한다.

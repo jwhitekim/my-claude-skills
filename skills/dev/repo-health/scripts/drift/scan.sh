@@ -16,7 +16,7 @@ if [ "$MODE" = "detail" ]; then
   exit 0
 fi
 
-TITLES=$(echo "$RESULTS" | grep '^\[config-drift-guard\]')
-COUNT=$(echo "$TITLES" | grep -c '^\[config-drift-guard\]')
-echo "[config-drift-guard] 점검 결과 ${COUNT}건 — 상세: bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail"
+TITLES=$(echo "$RESULTS" | grep '^\[repo-health:drift\]')
+COUNT=$(echo "$TITLES" | grep -c '^\[repo-health:drift\]')
+echo "[repo-health:drift] 점검 결과 ${COUNT}건 — 상세: bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail"
 echo "$TITLES" | sed 's/^/  /'

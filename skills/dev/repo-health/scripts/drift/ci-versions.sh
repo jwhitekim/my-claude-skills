@@ -33,5 +33,5 @@ check_version_key "node-version" && FOUND=$((FOUND + 1))
 check_version_key "python-version" && FOUND=$((FOUND + 1))
 
 if [ "$FOUND" -gt 0 ]; then
-  echo "[config-drift-guard] CI 워크플로 간 버전 핀 불일치 ${FOUND}개"
+  echo "[repo-health:drift] CI 워크플로 간 버전 핀 불일치 ${FOUND}개"
 fi

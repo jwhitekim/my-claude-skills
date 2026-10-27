@@ -49,9 +49,9 @@ bash ~/.claude/skills/repo-health/scripts/setup.sh
 [repo-health] 점검 결과 2건 — 상세: bash ~/.claude/skills/repo-health/scripts/scan.sh detail
   [repo-health] 오래된 TODO/FIXME 2건 (90일 이상 방치)
   [repo-health] 참조 없는 함수 후보 4개 이상 (오탐 가능 — 삭제 전 직접 확인)
-[config-drift-guard] 점검 결과 2건 — 상세: bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail
-  [config-drift-guard] .env 파일 간 키 불일치 1개 (기준: .env.example)
-  [config-drift-guard] CI 워크플로 간 버전 핀 불일치 1개
+[repo-health:drift] 점검 결과 2건 — 상세: bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail
+  [repo-health:drift] .env 파일 간 키 불일치 1개 (기준: .env.example)
+  [repo-health:drift] CI 워크플로 간 버전 핀 불일치 1개
 ```
 
 사용자가 상세를 요청하면 직접 실행한다:
@@ -61,7 +61,7 @@ bash ~/.claude/skills/repo-health/scripts/scan.sh detail
 ```
 
 환경 설정 drift만 요청하면 다음 진입점을 사용한다. `summary`와 `detail`을 지원하며
-기존 출력 표지(`[config-drift-guard]`)를 유지한다:
+출력 표지는 `[repo-health:drift]`를 사용한다:
 
 ```bash
 bash ~/.claude/skills/repo-health/scripts/drift/scan.sh detail

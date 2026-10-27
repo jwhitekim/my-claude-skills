@@ -18,6 +18,12 @@
 bash ~/.claude/skills/deploy-status/scripts/incident/collect.sh "<장애 시각>" [앞뒤 범위 시간, 기본 24]
 ```
 
+git 저장소 밖에서 실행하면 종료 코드 1과 함께 다음 오류를 출력한다:
+
+```text
+[deploy-status:incident] git 저장소가 아닙니다.
+```
+
 - 범위 안의 **커밋** 목록 (모든 브랜치)
 - 범위 안의 **GitHub Actions 실행** 기록과 성공/실패
 - 실패한 실행의 **로그 끝부분** (최대 3개, 정리 단계 잡음은 잘라냄)

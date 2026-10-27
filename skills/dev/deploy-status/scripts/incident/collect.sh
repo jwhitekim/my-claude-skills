@@ -11,7 +11,7 @@ PY_BIN="python3"
 command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "[incident-review] git 저장소가 아닙니다."
+  echo "[deploy-status:incident] git 저장소가 아닙니다."
   exit 1
 fi
 cd "$(git rev-parse --show-toplevel)" || exit 1
@@ -25,7 +25,7 @@ h = timedelta(hours=float(sys.argv[2]))
 print((t - h).isoformat(timespec="seconds"), (t + h).isoformat(timespec="seconds"))
 EOF
 )
-[ -z "${SINCE:-}" ] && { echo "[incident-review] 시각 형식이 잘못됐습니다 (예: 2026-10-02 14:30)"; exit 1; }
+[ -z "${SINCE:-}" ] && { echo "[deploy-status:incident] 시각 형식이 잘못됐습니다 (예: 2026-10-02 14:30)"; exit 1; }
 
 echo "## 범위: ${SINCE} ~ ${UNTIL} (장애 시각 ${INCIDENT} 기준 ±${HOURS}시간)"
 echo

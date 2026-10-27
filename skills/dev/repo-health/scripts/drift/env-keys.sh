@@ -36,5 +36,5 @@ for f in "${FILES[@]}"; do
 done
 
 if [ "$FOUND" -gt 0 ]; then
-  echo "[config-drift-guard] .env 파일 간 키 불일치 ${FOUND}개 (기준: ${BASELINE})"
+  echo "[repo-health:drift] .env 파일 간 키 불일치 ${FOUND}개 (기준: ${BASELINE})"
 fi
