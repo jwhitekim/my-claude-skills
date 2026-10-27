@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
-# my-claude-skills 레포의 skills/*/ 구성을 검사한다. 경고만 하고 아무것도 고치지 않는다.
+# my-claude-skills 레포의 스킬(skills/<이름>/ 또는 skills/<분류>/<이름>/) 구성을 검사한다. 경고만 하고 아무것도 고치지 않는다.
 # 사용법: lint.sh            전체 스킬 검사
 #        lint.sh <스킬명>    해당 스킬만 검사
 set -u
 
 _DIR="${BASH_SOURCE[0]%/*}"
-REPO_DIR="$(cd "$_DIR/../../.." && pwd)"
+# 설치 경로(~/.claude/skills/...)로 불려도 레포를 찾도록 실제 경로에서 install.sh가 있는 곳까지 올라간다.
+REPO_DIR="$(cd "$_DIR" && pwd -P)"
+while [ "$REPO_DIR" != "/" ] && [ ! -f "$REPO_DIR/install.sh" ]; do
+  REPO_DIR="$(dirname "$REPO_DIR")"
+done
 SKILLS_DIR="$REPO_DIR/skills"
+
+# 스킬 폴더 목록. 분류 폴더(skills/<분류>/<이름>/)와 평평한 구조(skills/<이름>/)를 모두 찾는다.
+skill_dirs() {
+  find "$SKILLS_DIR" -mindepth 2 -maxdepth 3 -name SKILL.md | sed 's#/SKILL.md$##' | sort
+}
+# 이름으로 스킬 폴더를 찾는다. 없으면 빈 문자열.
+skill_dir_of() {
+  skill_dirs | awk -v n="$1" -F/ '$NF == n { print; exit }'
+}
 README="$REPO_DIR/README.md"
 
 TARGET="${1:-}"
@@ -59,7 +72,9 @@ check_skill() {
         local ref_skill="${ref#skills/}"
         ref_skill="${ref_skill%%/*}"
         local ref_path="scripts/${ref##*/scripts/}"
-        [ -f "$SKILLS_DIR/$ref_skill/$ref_path" ] || warn "$name: SKILL.md가 참조하는 ${ref}가 존재하지 않음"
+        local ref_dir
+        ref_dir="$(skill_dir_of "$ref_skill")"
+        [ -n "$ref_dir" ] && [ -f "$ref_dir/$ref_path" ] || warn "$name: SKILL.md가 참조하는 ${ref}가 존재하지 않음"
         ;;
       *)
         [ -f "$dir/$ref" ] || warn "$name: SKILL.md가 참조하는 ${ref}가 존재하지 않음"
@@ -84,19 +99,25 @@ check_skill() {
 }
 
 if [ -n "$TARGET" ]; then
-  if [ -d "$SKILLS_DIR/$TARGET" ]; then
-    check_skill "$SKILLS_DIR/$TARGET"
+  target_dir="$(skill_dir_of "$TARGET")"
+  if [ -n "$target_dir" ]; then
+    check_skill "$target_dir"
   else
     echo "[skill-lint] 스킬을 찾을 수 없음: $TARGET"
     exit 1
   fi
 else
-  for dir in "$SKILLS_DIR"/*/; do
+  while IFS= read -r dir; do
     check_skill "$dir"
-  done
+  done < <(skill_dirs)
+
+  # 분류 폴더가 달라도 설치 위치(~/.claude/skills/<이름>)는 하나라 이름이 겹치면 안 된다.
+  while IFS= read -r dup_name; do
+    warn "같은 이름의 스킬이 두 곳 이상에 있음: $dup_name"
+  done < <(skill_dirs | awk -F/ '{print $NF}' | sort | uniq -d)
 
   # 스킬 간 description 완전 중복(복붙 실수) 검사 — 전체 스캔일 때만 의미 있음
-  DUP=$(for f in "$SKILLS_DIR"/*/SKILL.md; do
+  DUP=$(skill_dirs | while IFS= read -r d; do f="$d/SKILL.md"
     [ -f "$f" ] || continue
     desc=$(awk -F': ' '/^description:/{print substr($0, index($0,$2)); exit}' "$f")
     [ -z "$desc" ] && continue

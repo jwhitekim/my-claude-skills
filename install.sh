@@ -16,12 +16,22 @@ old_name_for() {
 
 mkdir -p "$TARGET_DIR"
 
+# 스킬은 skills/<분류>/<이름>/ 에 있다(평평한 skills/<이름>/ 도 지원). 설치 위치는 분류 없이 ~/.claude/skills/<이름>/.
+skill_dirs() {
+  find "$REPO_DIR/skills" -mindepth 2 -maxdepth 3 -name SKILL.md | sed 's#/SKILL.md$##' | sort
+}
+skill_dir_of() {
+  skill_dirs | awk -v n="$1" -F/ '$NF == n { print; exit }'
+}
+
 # 설치 전 레포 구성 점검 (경고만 하고 설치는 계속 진행)
-if [ -x "$REPO_DIR/skills/skill-lint/scripts/lint.sh" ]; then
-  bash "$REPO_DIR/skills/skill-lint/scripts/lint.sh"
+LINT="$(skill_dir_of skill-lint)/scripts/lint.sh"
+if [ -x "$LINT" ]; then
+  bash "$LINT"
 fi
 
-for d in "$REPO_DIR"/skills/*/; do
+while IFS= read -r d; do
+  d="$d/"
   name="$(basename "$d")"
   target="$TARGET_DIR/$name"
 
@@ -40,7 +50,7 @@ for d in "$REPO_DIR"/skills/*/; do
     rm -rf "$TARGET_DIR/$old_name"
     echo "removed stale: $old_name"
   fi
-done
+done < <(skill_dirs)
 
 # 세션 시작 점검(repo-health, watch-rules, config-drift-guard)을 전역 설정에 등록한다.
 # 프로젝트마다 따로 깔지 않아도 모든 프로젝트에서 돈다. 기존 설정은 settings.json.bak에 남긴다.
@@ -54,10 +64,10 @@ command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 "$PY_BIN" "$REPO_DIR/scripts/team-policy.py" "$HOME/.claude/settings.json" "$HOME/.claude/CLAUDE.md" "$REPO_DIR/policies/team-policy.md"
 
 # agent-browser 스킬이 쓰는 CLI와 전용 Chrome. 실패해도 나머지 설치는 계속한다.
-bash "$REPO_DIR/skills/agent-browser/scripts/setup.sh" || echo "[agent-browser] 설치 실패 — 나중에 다시 실행하세요"
+bash "$(skill_dir_of agent-browser)/scripts/setup.sh" || echo "[agent-browser] 설치 실패 — 나중에 다시 실행하세요"
 
 # codex 스킬이 쓰는 Codex CLI. 터미널에서 실행하면 로그인까지 진행한다.
-bash "$REPO_DIR/skills/codex/scripts/setup.sh" || echo "[codex] 설치 실패 — 나중에 다시 실행하세요"
+bash "$(skill_dir_of codex)/scripts/setup.sh" || echo "[codex] 설치 실패 — 나중에 다시 실행하세요"
 
 # API 키는 레포 밖 비밀 파일에 둔다. jev-eval/gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
