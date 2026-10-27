@@ -31,7 +31,7 @@ python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE
 ### API 키
 
 `gemini-rewrite`에는 `jq`가 필요합니다. 기본 호출에는 `GEMINI_API_KEY`를 쓰고, `AI_GATEWAY_API_KEY`는 402·429 응답 때 대체 호출용으로 선택 사항입니다. `GEMINI_PROVIDER=gateway`로 실행하면 `AI_GATEWAY_API_KEY`만 필요합니다.
-키는 [환경변수 예제](.env.example)를 복사해 입력합니다. 호출 경로는 [한국어 문장 다듬기 안내](skills/gemini-rewrite/SKILL.md)를 따릅니다.
+키는 [환경변수 예제](.env.example)를 복사해 입력합니다. 호출 경로는 [한국어 문장 다듬기 안내](skills/general/gemini-rewrite/SKILL.md)를 따릅니다.
 
 ```sh
 cp .env.example .env
@@ -55,7 +55,7 @@ codex login --device-auth                            # 브라우저 없는 서�
 printenv OPENAI_API_KEY | codex login --with-api-key  # API 키를 표준입력으로 전달
 ```
 
-자세한 준비 절차는 [Codex 사용 안내](skills/codex/SKILL.md)를 따릅니다.
+자세한 준비 절차는 [Codex 사용 안내](skills/general/codex/SKILL.md)를 따릅니다.
 
 ## 사용법
 
@@ -67,8 +67,8 @@ printenv OPENAI_API_KEY | codex login --with-api-key  # API 키를 표준입력�
 
 `repo-health`가 저장소 정리 대상과 설정 불일치를 확인합니다.
 
-배포 상태 확인의 전제조건은 [배포 상태 안내](skills/deploy-status/SKILL.md)를 따릅니다.
-[릴리스 점검 훅](skills/release-guard/SKILL.md)은 프로젝트마다 따로 설치합니다.
+배포 상태 확인의 전제조건은 [배포 상태 안내](skills/dev/deploy-status/SKILL.md)를 따릅니다.
+[릴리스 점검 훅](skills/dev/release-guard/SKILL.md)은 프로젝트마다 따로 설치합니다.
 
 ## 구성 목록
 
@@ -76,22 +76,22 @@ printenv OPENAI_API_KEY | codex login --with-api-key  # API 키를 표준입력�
 
 | 스킬 | 용도 |
 | --- | --- |
-| [`api-contract-guard`](skills/api-contract-guard/SKILL.md) | OpenAPI·Swagger 변경의 하위 호환성 점검 |
-| [`change-impact`](skills/change-impact/SKILL.md) | 변경 영향 범위·테스트 누락·SQL 마이그레이션 위험 점검 |
-| [`commit-and-push`](skills/commit-and-push/SKILL.md) | 변경 검증과 커밋, 사용자 확인 후 푸시 |
-| [`dependency-guard`](skills/dependency-guard/SKILL.md) | 의존성 잠금 파일 변경의 안전성 점검 |
-| [`deploy-status`](skills/deploy-status/SKILL.md) | GitHub Actions 배포 상태 확인·실패 진단·장애 회고 작성 |
-| [`release-guard`](skills/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 태그 푸시 전 점검 |
-| [`repo-health`](skills/repo-health/SKILL.md) | 저장소 정리 대상과 환경·CI 설정 불일치 점검 |
+| [`api-contract-guard`](skills/dev/api-contract-guard/SKILL.md) | OpenAPI·Swagger 변경의 하위 호환성 점검 |
+| [`change-impact`](skills/dev/change-impact/SKILL.md) | 변경 영향 범위·테스트 누락·SQL 마이그레이션 위험 점검 |
+| [`commit-and-push`](skills/dev/commit-and-push/SKILL.md) | 변경 검증과 커밋, 사용자 확인 후 푸시 |
+| [`dependency-guard`](skills/dev/dependency-guard/SKILL.md) | 의존성 잠금 파일 변경의 안전성 점검 |
+| [`deploy-status`](skills/dev/deploy-status/SKILL.md) | GitHub Actions 배포 상태 확인·실패 진단·장애 회고 작성 |
+| [`release-guard`](skills/dev/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 태그 푸시 전 점검 |
+| [`repo-health`](skills/dev/repo-health/SKILL.md) | 저장소 정리 대상과 환경·CI 설정 불일치 점검 |
 
 ### 그 외
 
 | 스킬 | 용도 |
 | --- | --- |
-| [`agent-browser`](skills/agent-browser/SKILL.md) | 실제 브라우저로 웹 탐색·조작·화면 확인 |
-| [`codex`](skills/codex/SKILL.md) | Codex 의견 요청·교차 검증·리뷰·문서 초안 작성 |
-| [`gemini-rewrite`](skills/gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
-| [`readme-writer`](skills/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
+| [`agent-browser`](skills/general/agent-browser/SKILL.md) | 실제 브라우저로 웹 탐색·조작·화면 확인 |
+| [`codex`](skills/general/codex/SKILL.md) | Codex 의견 요청·교차 검증·리뷰·문서 초안 작성 |
+| [`gemini-rewrite`](skills/general/gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
+| [`readme-writer`](skills/general/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 
 ## 스킬 수정 후 확인
 
