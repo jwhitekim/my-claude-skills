@@ -14,8 +14,8 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 case "$MODE" in
-  staged) CHANGED=$(git diff --cached --name-only --diff-filter=M) ;;
-  last)   CHANGED=$(git diff --name-only --diff-filter=M HEAD~1 HEAD 2>/dev/null) ;;
+  staged) CHANGED=$(git diff --cached --name-only --diff-filter=MD) ;;
+  last)   CHANGED=$(git diff --name-only --diff-filter=MD HEAD~1 HEAD 2>/dev/null) ;;
   *)      echo "[api-contract-guard] 알 수 없는 모드: $MODE (staged|last)"; exit 1 ;;
 esac
 
@@ -30,11 +30,12 @@ while IFS= read -r file; do
   old="$TMPDIR/old_$(basename "$file")"
   new="$TMPDIR/new_$(basename "$file")"
 
-  git show "HEAD:$file" > "$old" 2>/dev/null || : > "$old"
   if [ "$MODE" = "staged" ]; then
+    git show "HEAD:$file" > "$old" 2>/dev/null || : > "$old"
     git show ":$file" > "$new" 2>/dev/null || : > "$new"
   else
-    cat "$file" > "$new" 2>/dev/null || : > "$new"
+    git show "HEAD~1:$file" > "$old" 2>/dev/null || : > "$old"
+    git show "HEAD:$file" > "$new" 2>/dev/null || : > "$new"
   fi
 
   "$PY_BIN" "$_DIR/compare-openapi.py" "$old" "$new"

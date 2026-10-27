@@ -6,14 +6,15 @@ old파일이 비어있거나 없으면(신규 생성) 비교할 게 없어 조�
 
 잡는 것:
 - 삭제된 path+method (엔드포인트 제거)
-- components.schemas.*의 required 배열에 새로 추가된 필드 (클라이언트가 안 보내면 깨짐)
-- components.schemas.*에서 제거된 property
+- 스펙 파일 삭제
+- components.schemas.* / definitions.*의 스키마 삭제·required 필드 추가·property 삭제
+- 기존 파라미터의 required 변경 및 새 required 경로·쿼리·헤더 파라미터
 - property의 type이 바뀐 경우
 - enum에서 제거된 값
 
 안 잡는 것(의도적으로 보수적으로 둠 — 과한 오탐 방지):
 - $ref로 간접 참조된 스키마까지 재귀적으로 추적하는 건 하지 않는다 (복잡도 대비 효용 낮음)
-- 파라미터 자체의 required 변경은 스키마보다 흔한 패턴이라 별도로 확인한다(아래)
+- 스키마의 요청/응답 방향은 구분하지 않는다
 """
 import json
 import sys
@@ -58,25 +59,25 @@ def endpoints(spec):
 
 
 def param_required_map(spec):
-    """(path, method, param_name) -> required(bool)"""
+    """(path, method, param_name, location) -> required(bool), 경로 공통 파라미터 포함."""
     out = {}
     for path, methods in (spec.get("paths") or {}).items():
         if not isinstance(methods, dict):
             continue
         for method, op in methods.items():
-            if method.lower() not in ("get", "post", "put", "patch", "delete"):
+            if method.lower() not in ("get", "post", "put", "patch", "delete", "options", "head"):
                 continue
             if not isinstance(op, dict):
                 continue
-            for p in op.get("parameters") or []:
+            for p in (methods.get("parameters") or []) + (op.get("parameters") or []):
                 if isinstance(p, dict) and "name" in p:
-                    out[(path, method.lower(), p["name"])] = bool(p.get("required", False))
+                    out[(path, method.lower(), p["name"], p.get("in"))] = bool(p.get("required", False))
     return out
 
 
 def schemas(spec):
     comps = spec.get("components") or {}
-    return comps.get("schemas") or {}
+    return {**(spec.get("definitions") or {}), **(comps.get("schemas") or {})}
 
 
 def main():
@@ -90,6 +91,10 @@ def main():
         return  # 파싱 실패, 이미 메시지 출력함
     if not old:
         return  # 신규 스펙, 비교 대상 없음
+    if not new:
+        print("[api-contract-guard] breaking change 가능성 1건")
+        print("  - [BREAKING] 스펙 파일 삭제")
+        return
 
     issues = []
 
@@ -100,10 +105,12 @@ def main():
 
     old_params = param_required_map(old)
     new_params = param_required_map(new)
-    for key, was_required in old_params.items():
-        now_required = new_params.get(key)
-        if now_required is True and was_required is False:
-            path, method, name = key
+    for key, now_required in new_params.items():
+        path, method, name, location = key
+        if (path, method) not in old_eps:
+            continue  # 새 엔드포인트의 필수 파라미터는 기존 클라이언트를 깨지 않는다.
+        if now_required and (old_params.get(key) is False or
+                             (key not in old_params and location in ("path", "query", "header"))):
             issues.append(f"파라미터가 새로 필수가 됨: {method.upper()} {path} / {name}")
 
     old_schemas = schemas(old)

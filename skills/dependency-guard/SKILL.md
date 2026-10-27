@@ -16,9 +16,13 @@ bash ~/.claude/skills/dependency-guard/scripts/diff-versions.sh          # stage
 bash ~/.claude/skills/dependency-guard/scripts/diff-versions.sh last     # 마지막 커밋 기준
 ```
 
-- `package-lock.json`(v1/v2/v3 포맷 모두), `yarn.lock`, `pnpm-lock.yaml`을 지원한다.
-- 신규 설치된 패키지(old 쪽에 없던 것)는 "변경"이 아니라 "추가"이므로 비교 대상에서 뺀다.
-- major 버전(첫 번째 숫자)이 바뀐 패키지는 `[MAJOR]`로 강조해서 따로 모아 보여준다.
+- `package-lock.json`(npm v1 중첩 dependencies, v2/v3), `yarn.lock`(classic/Berry),
+  `pnpm-lock.yaml`(pnpm 5/6/9의 packages 키 형식)을 지원한다. 해석할 수 없는 형식은
+  경고하고 비교를 중단한다.
+- 패키지 이름별 버전 집합을 비교한다. 집합이 같으면 보고하지 않고, 달라지면 사라진
+  버전 → 추가된 버전만 보여준다(빈 쪽은 `-`). 신규 패키지는 `[NEW]`, 삭제는 `[REMOVED]`로 표시한다.
+- 사라진 버전과 추가된 버전이 모두 있으면 각 집합의 최대 major(첫 번째 숫자)를 비교한다.
+  서로 다르면 `[MAJOR]`로 강조해서 따로 모아 보여준다.
 
 ## 라이선스 정책 대조 (네트워크 필요, npm만)
 
@@ -41,6 +45,8 @@ bash ~/.claude/skills/dependency-guard/scripts/check-license-risk.sh --scope all
   복합 SPDX 식은 정확히 허용한 식이 아니면 사람에게 넘긴다. 법적 적합성을 확정하지 않는다.
 - 네트워크 실패는 미확인 상태로 남기고 다음 패키지를 조회한다. 실패를 위험으로 단정하지 않는다.
 - yarn.lock/pnpm-lock.yaml에서 뽑은 패키지도 이름만 npm registry에 있으면 동작한다.
+- `--packages major|all` 출력은 기존처럼 `이름@버전` 목록이다. 기존 패키지에 추가된
+  버전만 넘기며, 삭제된 버전이나 신규 패키지는 라이선스 조회에 넘기지 않는다.
 
 ## change-impact와의 연계
 
