@@ -14,7 +14,13 @@ set -euo pipefail
 
 SECRETS="$HOME/.config/my-claude-skills/secrets.env"
 if { [ -z "${GEMINI_API_KEY:-}" ] || [ -z "${AI_GATEWAY_API_KEY:-}" ]; } && [ -f "$SECRETS" ]; then
+  # 파일은 빈 키만 채운다. 환경변수로 이미 준 키가 파일의 예전 값에 덮이지 않게 되돌린다.
+  _env_gemini="${GEMINI_API_KEY:-}"
+  _env_gateway="${AI_GATEWAY_API_KEY:-}"
   . "$SECRETS"
+  [ -n "$_env_gemini" ] && GEMINI_API_KEY="$_env_gemini"
+  [ -n "$_env_gateway" ] && AI_GATEWAY_API_KEY="$_env_gateway"
+  unset _env_gemini _env_gateway
 fi
 
 PROVIDER="${GEMINI_PROVIDER:-google}"
