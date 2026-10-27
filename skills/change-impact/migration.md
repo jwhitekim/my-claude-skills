@@ -1,9 +1,4 @@
----
-name: migration-guard
-description: "Use when files under */migrations/*.sql (Supabase CLI or similar) are added or edited and you need to know whether the migration is destructive, risks table locks, or edits an already-applied migration — \"마이그레이션 파일 위험한 거 없나 봐줘\"."
----
-
-# migration-guard
+# 마이그레이션 위험 확인
 
 `supabase/migrations/*.sql`처럼 타임스탬프 파일로 쌓이는 DB 마이그레이션을 대상으로 한다.
 **SQL 파서가 아니라 키워드 휴리스틱**이다 — "이 패턴이 보이니 확인하라"는 신호지, 정밀
@@ -12,8 +7,8 @@ description: "Use when files under */migrations/*.sql (Supabase CLI or similar) 
 ## 실행
 
 ```bash
-bash ~/.claude/skills/migration-guard/scripts/check.sh          # staged 기준 (기본)
-bash ~/.claude/skills/migration-guard/scripts/check.sh last     # 마지막 커밋 기준
+bash ~/.claude/skills/change-impact/scripts/migration/check.sh staged   # staged 기준 (기본)
+bash ~/.claude/skills/change-impact/scripts/migration/check.sh last     # 마지막 커밋 기준
 ```
 
 `*/migrations/*.sql` 경로 패턴에 걸리는 파일만 대상으로 한다 — Supabase CLI
@@ -52,10 +47,20 @@ Supabase류 마이그레이션은 **append-only**가 원칙이다 — 이미 커
   없다 — "되돌릴 수 없는 변경이니 백업/확인하라"는 경고까지만 한다.
 - **스키마와 애플리케이션 코드의 정합성은 보지 않는다.**
 
-## change-impact와의 연계
+## 전체 영향 분석에서 호출할 때
 
-`change-impact`가 diff에 `*/migrations/*.sql` 변경이 있으면 `check.sh`를 대신 호출한다.
+`change-impact`가 diff에 `*/migrations/*.sql` 변경이 있으면 `scripts/migration/check.sh`를 호출한다.
 destructive/lock 패턴이나 기존 마이그레이션 수정이 보이면 사용자에게 알린다. 아무것도
 막지 않는다 — DB 변경은 때로 의도적으로 destructive해야 하므로(예: 정말 컬럼을 지워야
 하는 경우) 최종 판단은 사용자에게 맡긴다.
 `check.sh`는 경고만 발견하면 0, SQL 읽기 등 실행 오류가 나면 non-zero로 끝난다.
+
+SQL 파일 하나만 검사할 수도 있다. 기본 `file` 모드는 작업 파일을 읽으며,
+`staged`는 인덱스, `last`는 HEAD의 내용을 읽는다.
+
+```bash
+bash ~/.claude/skills/change-impact/scripts/migration/check-sql.sh supabase/migrations/001.sql file
+```
+
+`check-sql.sh`는 위험 패턴 없음이면 0, 패턴 발견이면 1, SQL 읽기·모드 등 실행 오류면 2로
+끝난다. `check.sh`는 패턴 발견을 경고로 모으므로 두 스크립트의 종료 코드 의미가 다르다.

@@ -1,9 +1,4 @@
----
-name: test-gap-finder
-description: "Use when changed code may lack tests — \"테스트 누락 확인해줘\", \"이 변경 테스트 커버 되나 봐줘\" — or when change-impact reports source changes without tests."
----
-
-# test-gap-finder
+# 테스트 누락 확인
 
 변경된 소스 파일마다 대응하는 테스트 파일이 있는지 기계적으로 확인한다. 없으면
 검토 후보로 보고한다. 후보가 실제로 테스트가 필요한지는 Claude가 diff를 읽고 판단한다.
@@ -13,8 +8,8 @@ description: "Use when changed code may lack tests — \"테스트 누락 확인
 ## 실행
 
 ```bash
-bash ~/.claude/skills/test-gap-finder/scripts/find-gaps.sh          # staged 변경 기준 (기본)
-bash ~/.claude/skills/test-gap-finder/scripts/find-gaps.sh last     # 마지막 커밋 기준
+bash ~/.claude/skills/change-impact/scripts/test-gap/find-gaps.sh staged   # staged 변경 기준 (기본)
+bash ~/.claude/skills/change-impact/scripts/test-gap/find-gaps.sh last     # 마지막 커밋 기준
 ```
 
 테스트 파일 자체(경로에 `test_`, `_test`, `.test.`, `.spec.`, `tests/`, `__tests__/`가 있는
@@ -35,7 +30,7 @@ bash ~/.claude/skills/test-gap-finder/scripts/find-gaps.sh last     # 마지막 
    로직 분기·조건·계산이 바뀌었는지 본다. 주석, 오타, 포맷, 설정 값처럼 동작이 바뀌지
    않는 변경은 테스트가 필요 없다고 본 근거를 적어 보고한다. 확정 판정이 아니라 판단 근거로 제시한다.
 2. **판단이 애매하면 사람에게 넘긴다.** 근거(바뀐 부분, 분기 여부)를 정리해 보여준다.
-3. **테스트가 필요하다고 판단되면** 해당 소스 파일을 읽고, 같은 프로젝트의 기존 테스트
+3. **테스트 작성이 요청되었고 필요하다고 판단되면** 해당 소스 파일을 읽고, 같은 프로젝트의 기존 테스트
    파일(다른 모듈 것이라도)을 하나 참고해서 테스트 프레임워크/스타일을 파악한 뒤,
    같은 컨벤션으로 새 테스트 파일을 작성한다. 정상 케이스 + 이번 diff가 추가한 분기/
    엣지케이스를 커버한다.
@@ -45,17 +40,18 @@ bash ~/.claude/skills/test-gap-finder/scripts/find-gaps.sh last     # 마지막 
 5. **작성한 테스트는 실제로 돌려서 통과를 확인한다.** 통과 확인 없이 "테스트를
    추가했다"고 보고하지 않는다.
 
-## change-impact와의 연계
+## 전체 영향 분석에서 호출할 때
 
 `change-impact`가 diff에 소스 파일 변경이 있으면 `find-gaps.sh`를 대신 호출한다. 갭이
-있으면 위 절차로 후보를 검토해 사용자에게 보여주고 테스트를 작성할지 확인받는다. 테스트
+있으면 위 절차로 후보를 검토해 사용자에게 보여준다. 테스트 작성이 이미 요청되었으면
+그 범위에서 진행하고, 검사만 요청되었으면 작성할지 확인받는다. 테스트
 없이 진행하는 걸 막지는 않는다 — 판단은 사용자에게 맡긴다.
 
 ## 하지 않는 것
 
 - **커밋을 막지 않는다.** 정보 제공 + 제안까지만 자동이고, 테스트 작성 여부와 커밋
-  진행은 항상 사용자 확인을 거친다.
+  진행은 사용자가 요청한 범위에서만 한다.
 - **테스트 커버리지 퍼센트 계산 안 함.** "파일 단위로 테스트가 존재하는가"만 본다.
-- **기존 테스트가 부실한지는 판단하지 않는다.** 테스트 파일이 존재하기만 하면
-  "파일 없음" 갭에서는 제외된다.
+- **스크립트는 기존 테스트가 부실한지 판단하지 않는다.** 테스트 파일이 존재하기만 하면
+  "파일 없음" 갭에서는 제외된다. 실제 커버 여부는 위 절차에 따라 Claude가 검토한다.
 - **외부 모델 호출을 하지 않는다.** 스크립트는 로컬 git 파일 목록만 본다.

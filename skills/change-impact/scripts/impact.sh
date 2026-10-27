@@ -63,13 +63,13 @@ run() {
   fi
 }
 
-has "$SRC"       && run "테스트 누락 (test-gap-finder)"     bash "$SKILLS/test-gap-finder/scripts/find-gaps.sh" "$MODE"
+has "$SRC"       && run "테스트 누락"                       bash "$SKILLS/change-impact/scripts/test-gap/find-gaps.sh" "$MODE"
 has "$LOCK"      && run "의존성 변경 (dependency-guard)"    bash "$SKILLS/dependency-guard/scripts/diff-versions.sh" "$MODE"
 has "$SPEC"      && run "API 스펙 (api-contract-guard)"     bash "$SKILLS/api-contract-guard/scripts/check.sh" "$MODE"
-has "$MIGRATION" && run "DB 마이그레이션 (migration-guard)" bash "$SKILLS/migration-guard/scripts/check.sh" "$MODE"
+has "$MIGRATION" && run "DB 마이그레이션"                   bash "$SKILLS/change-impact/scripts/migration/check.sh" "$MODE"
 
-# config-drift-guard는 diff가 아니라 현재 파일 상태 전체를 비교한다.
-has "$CONFIG" && run "설정 불일치 (config-drift-guard)" bash "$SKILLS/config-drift-guard/scripts/scan.sh" detail
+# repo-health drift는 diff가 아니라 현재 파일 상태 전체를 비교한다.
+has "$CONFIG" && run "설정 불일치 (repo-health drift)" bash "$SKILLS/repo-health/scripts/drift/scan.sh" detail
 
 if echo "$CHANGED" | grep -qE '^\.github/workflows/'; then
   echo

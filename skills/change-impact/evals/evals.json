@@ -1,16 +1,20 @@
 [
   {
-    "skills": ["change-impact"],
+    "skills": [
+      "change-impact"
+    ],
     "query": "이 변경이 뭘 건드리는지 봐줘",
     "state": "staged에 소스 파일, package-lock.json, supabase 마이그레이션이 함께 있음",
     "expected_behavior": [
       "scripts/impact.sh를 실행한다",
       "영향 범위 요약(소스/의존성/DB마이그레이션)을 보여주고, 가드별로 걸린 항목을 섹션으로 정리한다",
-      "후속 조치는 각 가드 스킬의 지침을 따르고, 아무것도 막지 않는다"
+      "후속 조치는 change-impact의 해당 검사 지침과 외부 가드 스킬 지침을 따르고, 아무것도 막지 않는다"
     ]
   },
   {
-    "skills": ["change-impact"],
+    "skills": [
+      "change-impact"
+    ],
     "query": "영향 범위 확인해줘",
     "state": "아무것도 staged 안 됐고, 방금 커밋을 하나 함",
     "expected_behavior": [
@@ -18,12 +22,107 @@
     ]
   },
   {
-    "skills": ["commit-and-push"],
+    "skills": [
+      "commit-and-push"
+    ],
     "query": "커밋해줘",
     "state": "staged에 로직 변경과 lockfile 변경이 있음",
     "expected_behavior": [
       "commit-and-push는 change-impact나 가드 스킬을 자동으로 부르지 않는다",
       "commit-and-push 자체 절차(검증, staged 검토, 커밋)만 진행한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "supabase/migrations/에 새 .sql 파일이 추가됐고 DROP COLUMN 문이 포함됨",
+    "expected_behavior": [
+      "change-impact가 scripts/migration/check.sh staged를 실행한다",
+      "DROP COLUMN을 destructive로 알린다",
+      "아무것도 막지 않고 판단은 사용자에게 맡긴다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "마이그레이션 파일 위험한 거 없나 봐줘",
+    "state": "이미 커밋된 마이그레이션 파일(지난주 작성)을 방금 수정함",
+    "expected_behavior": [
+      "scripts/migration/check.sh를 실행해 기존 마이그레이션 수정을 감지한다",
+      "이미 적용된 환경에는 반영되지 않는다는 점을 알리고 새 마이그레이션 파일 추가를 권한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "migrations/ 폴더가 없는 프로젝트",
+    "expected_behavior": [
+      "change-impact가 마이그레이션 변경이 없다고 판단해 마이그레이션 검사를 호출하지 않는다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경 테스트 커버 되나 봐줘",
+    "state": "staged 변경에 새 함수가 추가됐고 대응 테스트 파일이 없음",
+    "expected_behavior": [
+      "scripts/test-gap/find-gaps.sh를 실행해 테스트 파일이 없는 소스 파일을 찾는다",
+      "후보 목록을 받은 뒤 Claude가 diff를 직접 읽고 테스트가 필요한지 근거와 함께 판단한다",
+      "결과를 보여주고, 테스트를 작성할지 사용자에게 확인한다",
+      "작성하기로 하면 기존 테스트 스타일을 참고해 작성하고 실제로 돌려 통과를 확인한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "staged 변경에 로직이 바뀐 함수가 있고 대응 테스트 파일이 없음",
+    "expected_behavior": [
+      "change-impact가 scripts/test-gap/find-gaps.sh staged도 실행한다",
+      "갭이 있으면 사용자에게 알리고 테스트 작성 여부를 확인한다",
+      "테스트 없이 진행하기로 해도 막지 않는다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "README 오타만 고친 건데 테스트 필요해?",
+    "state": "staged 변경이 .md 파일 하나뿐, 로직 변경 없음",
+    "expected_behavior": [
+      "find-gaps.sh는 .md 확장자를 검사 대상으로 보지 않으므로 애초에 갭으로 안 잡힘",
+      "테스트가 필요 없다고 바로 답한다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경에 테스트 빠진 거 찾아줘",
+    "state": "대응 테스트 파일이 없는 소스에 조건문 하나가 추가됐고, diff를 읽어도 테스트가 필요한지 애매함",
+    "expected_behavior": [
+      "find-gaps.sh로 소스·테스트 파일 존재를 먼저 검사하고 후보로 보고한다",
+      "Claude가 diff를 직접 읽고 분기 추가 여부를 근거와 함께 정리한다",
+      "판단이 애매하므로 후보에서 빼지 않고 사람 확인으로 넘긴다"
+    ]
+  },
+  {
+    "skills": [
+      "change-impact"
+    ],
+    "query": "이 변경 테스트 커버 되나 봐줘",
+    "state": "staged 변경이 대응 테스트 파일이 없는 소스의 주석과 문자열 오타 수정뿐, 로직 변경 없음",
+    "expected_behavior": [
+      "find-gaps.sh는 해당 소스를 후보로 보고한다",
+      "Claude가 diff를 읽고 로직 변경이 없다는 근거를 들어 테스트 불필요로 보고한다",
+      "테스트 불필요를 확정 판정으로 말하지 않고, 사용자가 원하면 작성할 수 있다고 알린다"
     ]
   }
 ]
