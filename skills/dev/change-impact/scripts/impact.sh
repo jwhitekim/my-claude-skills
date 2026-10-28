@@ -70,10 +70,16 @@ has "$LOCK"      && run "의존성 변경 (dependency-guard)"    bash "$SKILLS/d
 has "$SPEC"      && run "API 스펙 (api-contract-guard)"     bash "$SKILLS/api-contract-guard/scripts/check.sh" "$MODE"
 has "$MIGRATION" && run "DB 마이그레이션"                   bash "$SKILLS/change-impact/scripts/migration/check.sh" "$MODE"
 
+# 문서 스펙은 작업 트리가 아니라 모드가 가리키는 시점(인덱스 또는 HEAD)의 내용을 검사한다.
 if has "$DOCS_SPEC"; then
+  SPEC_TMP="$(mktemp -d)"
+  [ "$MODE" = "staged" ] && REV="" || REV="HEAD"
   while IFS= read -r f; do
-    [ -f "$f" ] && run "문서 스펙 형식 (spec-docs): $f" bash "$SKILLS/spec-docs/scripts/check-spec.sh" "$f"
+    snap="$SPEC_TMP/${f//\//_}"
+    git show "$REV:$f" > "$snap" 2>/dev/null || continue   # 삭제된 파일은 검사할 내용이 없다
+    run "문서 스펙 형식 (spec-docs): $f" bash "$SKILLS/spec-docs/scripts/check-spec.sh" "$snap"
   done < <(echo "$CHANGED" | grep -E "$DOCS_SPEC")
+  rm -rf "$SPEC_TMP"
 fi
 
 # repo-health drift는 diff가 아니라 현재 파일 상태 전체를 비교한다.

@@ -28,9 +28,14 @@ for f in "${FILES[@]}"; do
   [ "$f" = "$BASELINE" ] && continue
   [ -f "$f" ] || continue
   cur_keys="$(keys_of "$f")"
-  missing=$(comm -23 <(echo "$BASE_KEYS" | sort) <(echo "$cur_keys" | sort))
+  missing=$(comm -23 <(echo "$BASE_KEYS" | sort -u) <(echo "$cur_keys" | sort -u))
+  extra=$(comm -13 <(echo "$BASE_KEYS" | sort -u) <(echo "$cur_keys" | sort -u | sed '/^$/d'))
   if [ -n "$missing" ]; then
     echo "  - ${f}: ${BASELINE}에는 있는데 없는 키 -> $(echo "$missing" | tr '\n' ' ')"
+    FOUND=$((FOUND + 1))
+  fi
+  if [ -n "$extra" ]; then
+    echo "  - ${f}: ${BASELINE}에는 없는 키 -> $(echo "$extra" | tr '\n' ' ')"
     FOUND=$((FOUND + 1))
   fi
 done
