@@ -1,0 +1,55 @@
+[
+  {
+    "skills": ["spec-docs"],
+    "query": "SDD 문서 구조 처음부터 잡아줘",
+    "state": "프로젝트에 명세·설계 문서가 없고 capability 목록과 의존성 순서는 아직 전달하지 않음",
+    "expected_behavior": [
+      "capability 목록과 의존성 순서를 사용자에게 직접 묻고 하드코딩하지 않는다",
+      "답변을 바탕으로 docs/README.md, contract.md, proposal.md, design.md, tasks.md와 capability별 specs/<capability>/spec.md를 만든다",
+      "design.md와 tasks.md는 프로젝트 전체에 하나씩만 만들고 OpenSpec 전용 이름·델타 폴더·버전 번호 파일명을 쓰지 않는다",
+      "하네스 설정 파일에 문서 배치는 docs/docs-rules.md를 따른다는 줄을 추가하고, docs-rules.md가 없으면 처음 세팅의 배치 규칙 요약을 만든다",
+      "contract.md를 최초 작성 후 FROZEN으로 취급하고 이후에는 재해석 없이 인용한다"
+    ]
+  },
+  {
+    "skills": ["spec-docs"],
+    "query": "계정 잠금 요구사항 작성해줘",
+    "state": "docs/specs/auth/spec.md에 로그인 실패 누적 시 계정 잠금 동작을 추가하려고 함",
+    "expected_behavior": [
+      "### Requirement: 제목 아래에 SHALL을 쓰는 단정문을 작성한다",
+      "#### Scenario: 아래에 - GIVEN, - WHEN, - THEN을 모두 일반 텍스트로 작성한다",
+      "작성 직후 check-spec.sh로 해당 spec.md를 검사하고, 실패하면 고친 뒤 다시 검사한다"
+    ]
+  },
+  {
+    "skills": ["spec-docs"],
+    "query": "작업 항목 추가해줘",
+    "state": "docs/tasks.md에 계정 잠금 구현을 추가하려지만 사용자가 근거 Requirement를 명시하지 않음",
+    "expected_behavior": [
+      "근거 Requirement를 사용자에게 되묻거나 근거 없는 작업의 삭제를 제안하며 자동으로 매핑을 만들지 않는다",
+      "사람이 근거를 명시하면 작업 본문에 Requirement 이름을 적고 실제 Requirement와 일치하는지 확인한다",
+      "추가 직후 check-spec.sh로 docs/를 검사하되 스크립트가 작업 근거 대조까지 수행한다고 설명하지 않는다"
+    ]
+  },
+  {
+    "skills": ["spec-docs"],
+    "query": "문서 배치랑 스펙 형식 점검해줘",
+    "state": "docs/specs/auth/design.md, docs/AGENTS.md, docs/contract-v0.1.md가 있고 spec.md의 Scenario가 GIVEN 없이 **WHEN**을 사용함. Git 이력에서 contract.md 최근 변경도 확인됨",
+    "expected_behavior": [
+      "check-spec.sh에 docs/ 디렉터리를 전달해 배치와 모든 capability spec.md를 검사한다",
+      "금지 이름, capability별 design.md, GIVEN 누락과 볼드 표기를 위반으로 보고한다",
+      "contract.md 변경은 FROZEN 원칙 확인 경고로 전달하고 내용을 재해석하거나 강제로 막지 않는다",
+      "문장 톤과 문체는 검사하지 않는다"
+    ]
+  },
+  {
+    "skills": ["change-impact", "spec-docs"],
+    "query": "이 변경이 뭘 건드리는지 봐줘",
+    "state": "staged 변경에 docs/specs/auth/spec.md가 있고 Scenario의 THEN 항목이 빠져 있음",
+    "expected_behavior": [
+      "change-impact의 impact.sh가 문서스펙 영향 범위를 분류한다",
+      "spec-docs/scripts/check-spec.sh에 변경된 spec.md 경로를 전달한다",
+      "THEN 누락을 보여주고 현재 change-impact 절차에 따라 가드 실패를 모아 보고한다"
+    ]
+  }
+]

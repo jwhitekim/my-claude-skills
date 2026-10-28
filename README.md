@@ -1,6 +1,6 @@
 # my-claude-skills
 
-저장소 점검, 변경 검증, 문서 작성과 브라우저 작업에 쓰는 개인용 Claude Code 스킬 11개와 전역 훅·운영 정책을 관리하고 설치하는 저장소입니다.
+저장소 점검, 변경 검증, 문서 작성과 브라우저 작업에 쓰는 개인용 Claude Code 스킬 12개와 전역 훅·운영 정책을 관리하고 설치하는 저장소입니다.
 
 ## 시작하기
 
@@ -35,6 +35,7 @@ cd my-claude-skills
 | [`deploy-status`](skills/dev/deploy-status/SKILL.md) | GitHub Actions 배포 상태 확인·실패 진단·장애 회고 작성 |
 | [`release-guard`](skills/dev/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 태그 푸시 전 점검 |
 | [`repo-health`](skills/dev/repo-health/SKILL.md) | 저장소 정리 대상과 환경·CI 설정 불일치 점검 |
+| [`spec-docs`](skills/dev/spec-docs/SKILL.md) | SDD 문서 구조 초기 세팅·요구사항과 작업 작성 형식·문서 배치 점검 |
 
 ### 그 외
 

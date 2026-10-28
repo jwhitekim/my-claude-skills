@@ -35,6 +35,7 @@ SRC='\.(py|js|jsx|ts|tsx|go|rb|java)$'
 LOCK='(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml)$'
 SPEC='(openapi|swagger)[^/]*\.(ya?ml|json)$'
 MIGRATION='(^|/)migrations/[^/]+\.sql$'
+DOCS_SPEC='(^|/)specs/[^/]+/spec\.md$'
 CONFIG='(^|/)\.env[^/]*$|^\.github/workflows/'
 
 AREAS=""
@@ -42,6 +43,7 @@ has "$SRC"       && AREAS="$AREAS 소스"
 has "$LOCK"      && AREAS="$AREAS 의존성"
 has "$SPEC"      && AREAS="$AREAS API스펙"
 has "$MIGRATION" && AREAS="$AREAS DB마이그레이션"
+has "$DOCS_SPEC" && AREAS="$AREAS 문서스펙"
 has "$CONFIG"    && AREAS="$AREAS 설정/CI"
 
 COUNT=$(echo "$CHANGED" | wc -l | tr -d ' ')
@@ -67,6 +69,12 @@ has "$SRC"       && run "테스트 누락"                       bash "$SKILLS/c
 has "$LOCK"      && run "의존성 변경 (dependency-guard)"    bash "$SKILLS/dependency-guard/scripts/diff-versions.sh" "$MODE"
 has "$SPEC"      && run "API 스펙 (api-contract-guard)"     bash "$SKILLS/api-contract-guard/scripts/check.sh" "$MODE"
 has "$MIGRATION" && run "DB 마이그레이션"                   bash "$SKILLS/change-impact/scripts/migration/check.sh" "$MODE"
+
+if has "$DOCS_SPEC"; then
+  while IFS= read -r f; do
+    [ -f "$f" ] && run "문서 스펙 형식 (spec-docs): $f" bash "$SKILLS/spec-docs/scripts/check-spec.sh" "$f"
+  done < <(echo "$CHANGED" | grep -E "$DOCS_SPEC")
+fi
 
 # repo-health drift는 diff가 아니라 현재 파일 상태 전체를 비교한다.
 has "$CONFIG" && run "설정 불일치 (repo-health drift)" bash "$SKILLS/repo-health/scripts/drift/scan.sh" detail

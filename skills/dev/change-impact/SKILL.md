@@ -6,7 +6,7 @@ description: "Use when asked to review the overall impact of staged changes or t
 # change-impact
 
 변경 영향 범위를 분류하고 관련 검사를 실행한다. 테스트 누락 확인과 마이그레이션 위험
-확인은 이 스킬에 포함되어 있으며, 각각 단독으로 실행할 수도 있다. 의존성·API·설정은
+확인은 이 스킬에 포함되어 있으며, 각각 단독으로 실행할 수도 있다. 의존성·API·문서 스펙·설정은
 해당 외부 스킬의 스크립트를 호출한다. 스크립트는 후보와 위험 신호를 찾고, Claude는
 diff와 기존 테스트를 읽어 실제 테스트 필요성과 커버 여부를 판단한다.
 
@@ -34,6 +34,7 @@ bash ~/.claude/skills/change-impact/scripts/impact.sh last     # 마지막 커�
 | 의존성 | `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml` | `dependency-guard` — 버전 변경, major 업그레이드 |
 | API 스펙 | 파일명에 `openapi`/`swagger`가 든 `.yaml/.yml/.json` | `api-contract-guard` — breaking change |
 | DB 마이그레이션 | `*/migrations/*.sql` | 내장 마이그레이션 검사 — destructive/lock 위험, 기존 파일 수정 |
+| 문서 스펙 | `specs/<capability>/spec.md` | `spec-docs`의 `check-spec.sh` — Requirement/Scenario 형식 |
 | 설정/CI | `.env*`, `.github/workflows/*` | `repo-health/scripts/drift/scan.sh detail` — `.env` 키·CI 버전 핀 불일치 (현재 상태 전체 비교) |
 
 CI 워크플로가 바뀌었으면 푸시 후 `deploy-status`로 배포 결과를 확인하라고 한 줄 덧붙인다.
