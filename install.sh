@@ -15,9 +15,9 @@ old_name_for() {
 
 mkdir -p "$TARGET_DIR"
 
-# 스킬은 skills/<분류>/<이름>/ 에 있다(평평한 skills/<이름>/ 도 지원). 설치 위치는 분류 없이 ~/.claude/skills/<이름>/.
+# 스킬은 레포 루트의 <이름>/ 에 있다. 설치 위치는 ~/.claude/skills/<이름>/.
 skill_dirs() {
-  find "$REPO_DIR/skills" -mindepth 2 -maxdepth 3 -name SKILL.md | sed 's#/SKILL.md$##' | sort
+  find "$REPO_DIR" -mindepth 2 -maxdepth 2 -name SKILL.md | sed 's#/SKILL.md$##' | sort
 }
 skill_dir_of() {
   skill_dirs | awk -v n="$1" -F/ '$NF == n { print; exit }'
@@ -56,7 +56,7 @@ for link in "$TARGET_DIR"/*; do
   [ -L "$link" ] || continue
   dest="$(readlink "$link")"
   case "$dest" in
-    "$REPO_DIR"/skills/*) [ -e "$dest" ] || { rm -f "$link"; echo "removed stale link: $(basename "$link")"; } ;;
+    "$REPO_DIR"/*) [ -e "$dest" ] || { rm -f "$link"; echo "removed stale link: $(basename "$link")"; } ;;
   esac
 done
 

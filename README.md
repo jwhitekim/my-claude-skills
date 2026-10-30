@@ -28,23 +28,23 @@ cd my-claude-skills
 
 | 스킬 | 용도 |
 | --- | --- |
-| [`api-contract-guard`](skills/dev/api-contract-guard/SKILL.md) | OpenAPI·Swagger 변경의 하위 호환성 점검 |
-| [`change-impact`](skills/dev/change-impact/SKILL.md) | 변경 영향 범위·테스트 누락·SQL 마이그레이션 위험 점검 |
-| [`commit-and-push`](skills/dev/commit-and-push/SKILL.md) | 변경 검증과 커밋, 사용자 확인 후 푸시 |
-| [`dependency-guard`](skills/dev/dependency-guard/SKILL.md) | 의존성 잠금 파일 변경의 안전성 점검 |
-| [`deploy-status`](skills/dev/deploy-status/SKILL.md) | GitHub Actions 배포 상태 확인·실패 진단·장애 회고 작성 |
-| [`release-guard`](skills/dev/release-guard/SKILL.md) | 릴리스·버전 태그 준비와 태그 푸시 전 점검 |
-| [`repo-health`](skills/dev/repo-health/SKILL.md) | 저장소 정리 대상과 환경·CI 설정 불일치 점검 |
-| [`spec-docs`](skills/dev/spec-docs/SKILL.md) | SDD 문서 구조 초기 세팅·요구사항과 작업 작성 형식·문서 배치 점검 |
+| [`api-contract-guard`](api-contract-guard/SKILL.md) | OpenAPI·Swagger 변경의 하위 호환성 점검 |
+| [`change-impact`](change-impact/SKILL.md) | 변경 영향 범위·테스트 누락·SQL 마이그레이션 위험 점검 |
+| [`commit-and-push`](commit-and-push/SKILL.md) | 변경 검증과 커밋, 사용자 확인 후 푸시 |
+| [`dependency-guard`](dependency-guard/SKILL.md) | 의존성 잠금 파일 변경의 안전성 점검 |
+| [`deploy-status`](deploy-status/SKILL.md) | GitHub Actions 배포 상태 확인·실패 진단·장애 회고 작성 |
+| [`release-guard`](release-guard/SKILL.md) | 릴리스·버전 태그 준비와 태그 푸시 전 점검 |
+| [`repo-health`](repo-health/SKILL.md) | 저장소 정리 대상과 환경·CI 설정 불일치 점검 |
+| [`spec-docs`](spec-docs/SKILL.md) | SDD 문서 구조 초기 세팅·요구사항과 작업 작성 형식·문서 배치 점검 |
 
 ### 그 외
 
 | 스킬 | 용도 |
 | --- | --- |
-| [`agent-browser`](skills/general/agent-browser/SKILL.md) | 실제 브라우저로 웹 탐색·조작·화면 확인 |
-| [`codex`](skills/general/codex/SKILL.md) | Codex 의견 요청·교차 검증·리뷰·문서 초안 작성 |
-| [`gemini-rewrite`](skills/general/gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
-| [`readme-writer`](skills/general/readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
+| [`agent-browser`](agent-browser/SKILL.md) | 실제 브라우저로 웹 탐색·조작·화면 확인 |
+| [`codex`](codex/SKILL.md) | Codex 의견 요청·교차 검증·리뷰·문서 초안 작성 |
+| [`gemini-rewrite`](gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
+| [`readme-writer`](readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 
 전역으로 적용하는 작업 분담 기준은 [팀 운영 정책](policies/team-policy.md)을 참고합니다.
 

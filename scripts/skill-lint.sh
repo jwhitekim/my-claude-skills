@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# my-claude-skills 레포의 스킬(skills/<이름>/ 또는 skills/<분류>/<이름>/) 구성을 검사한다. 경고만 하고 아무것도 고치지 않는다.
+# my-claude-skills 레포 루트의 스킬(<이름>/) 구성을 검사한다. 경고만 하고 아무것도 고치지 않는다.
 # 검사: SKILL.md 존재, frontmatter name과 폴더명 일치, description 비어있음 여부,
 # SKILL.md의 scripts/*.sh·py 참조 경로 존재, scripts/*.sh 실행 권한, README 스킬 등재.
 # 전체 검사에서는 스킬명 중복과 description 완전 중복도 확인한다.
@@ -13,11 +13,10 @@ REPO_DIR="$(cd "$_DIR" && pwd -P)"
 while [ "$REPO_DIR" != "/" ] && [ ! -f "$REPO_DIR/install.sh" ]; do
   REPO_DIR="$(dirname "$REPO_DIR")"
 done
-SKILLS_DIR="$REPO_DIR/skills"
 
-# 스킬 폴더 목록. 분류 폴더(skills/<분류>/<이름>/)와 평평한 구조(skills/<이름>/)를 모두 찾는다.
+# 스킬 폴더 목록. 레포 루트 바로 아래에서 SKILL.md가 있는 폴더를 찾는다.
 skill_dirs() {
-  find "$SKILLS_DIR" -mindepth 2 -maxdepth 3 -name SKILL.md | sed 's#/SKILL.md$##' | sort
+  find "$REPO_DIR" -mindepth 2 -maxdepth 2 -name SKILL.md | sed 's#/SKILL.md$##' | sort
 }
 # 이름으로 스킬 폴더를 찾는다. 없으면 빈 문자열.
 skill_dir_of() {
@@ -67,7 +66,7 @@ check_skill() {
   fi
 
   # SKILL.md가 언급하는 scripts/*.sh|py 경로가 실제로 존재하는지.
-  # "skills/<다른스킬>/scripts/X" 형태면 그 스킬 기준으로, 아니면 자기 폴더 기준으로 본다.
+  # "skills/<다른스킬>/scripts/X"(설치 경로 ~/.claude/skills/...) 형태면 그 스킬 기준으로, 아니면 자기 폴더 기준으로 본다.
   while IFS= read -r ref; do
     [ -z "$ref" ] && continue
     case "$ref" in
@@ -114,7 +113,7 @@ else
     check_skill "$dir"
   done < <(skill_dirs)
 
-  # 분류 폴더가 달라도 설치 위치(~/.claude/skills/<이름>)는 하나라 이름이 겹치면 안 된다.
+  # 설치 위치(~/.claude/skills/<이름>)는 하나라 이름이 겹치면 안 된다.
   while IFS= read -r dup_name; do
     warn "같은 이름의 스킬이 두 곳 이상에 있음: $dup_name"
   done < <(skill_dirs | awk -F/ '{print $NF}' | sort | uniq -d)

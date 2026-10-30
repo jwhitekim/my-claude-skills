@@ -233,7 +233,7 @@ README의 범위는 [공통 기준](style.md#readme와-상세-문서)으로 먼�
 - **첫 화면**: 한 줄 소개에서 설치와 구성 목록으로 이어지게 한다. 그림·배지는 필요할 때만 쓴다.
 - **시작하기 형태**: 설치 명령과 설치 후 최소 사용 예시 하나.
 
-**근거 레퍼런스**: 이 저장소 [my-claude-skills](https://github.com/jwhitekim/my-claude-skills/blob/main/README.md)의 [README](../../../README.md)를 근거로 설치·사용법·구성 목록 흐름을 유지한다.
+**근거 레퍼런스**: 이 저장소 [my-claude-skills](https://github.com/jwhitekim/my-claude-skills/blob/main/README.md)의 [README](../README.md)를 근거로 설치·사용법·구성 목록 흐름을 유지한다.
 
 ### 복사용 뼈대
 
