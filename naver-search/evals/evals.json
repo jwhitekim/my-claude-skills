@@ -1,0 +1,21 @@
+[
+  {
+    "skills": ["naver-search"],
+    "query": "요즘 국내에서 전세사기 관련 기사 최신순으로 찾아줘",
+    "state": "NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET이 저장돼 있음",
+    "expected_behavior": [
+      "naver.py를 --type news --sort date로 실행한다",
+      "기사 제목·날짜·언론사 원문 링크를 함께 보여준다",
+      "description만으로 사실을 단정하지 않고 필요하면 원문을 읽는다"
+    ]
+  },
+  {
+    "skills": ["naver-search"],
+    "query": "네이버에서 이 맛집 후기 찾아줘",
+    "state": "네이버 키가 없음",
+    "expected_behavior": [
+      "스크립트가 키 없음 오류로 종료 코드 1을 낸다",
+      "네이버 클라우드 NAVER API HUB에서 발급 후 .env와 ./install.sh로 등록하라고 안내한다"
+    ]
+  }
+]
