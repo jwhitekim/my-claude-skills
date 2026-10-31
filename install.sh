@@ -77,7 +77,7 @@ bash "$(skill_dir_of agent-browser)/scripts/setup.sh" || echo "[agent-browser] �
 # codex 스킬이 쓰는 Codex CLI. 터미널에서 실행하면 로그인까지 진행한다.
 bash "$(skill_dir_of codex)/scripts/setup.sh" || echo "[codex] 설치 실패 — 나중에 다시 실행하세요"
 
-# API 키는 레포 밖 비밀 파일에 둔다. gemini-rewrite 스크립트가 환경변수가 없을 때 여기서 읽는다.
+# API 키는 레포 밖 비밀 파일에 둔다. gemini-rewrite·paper-search 스크립트가 환경변수가 없을 때 여기서 읽는다.
 SECRETS_DIR="$HOME/.config/my-claude-skills"
 SECRETS="$SECRETS_DIR/secrets.env"
 mkdir -p "$SECRETS_DIR"
@@ -99,7 +99,7 @@ dotenv_value() {
   printf '%s' "$line"
 }
 
-for key in AI_GATEWAY_API_KEY GEMINI_API_KEY; do
+for key in AI_GATEWAY_API_KEY GEMINI_API_KEY S2_API_KEY OPENALEX_API_KEY; do
   value="$(dotenv_value "$key")"
   if [ -n "$value" ]; then
     # 환경변수를 저장값으로 오인하지 않게 subshell에서 먼저 지운 뒤 파일만 읽는다.
