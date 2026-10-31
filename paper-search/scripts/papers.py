@@ -5,16 +5,21 @@
   papers.py search "<검색어>" [--limit N] [--year 2023-] [--oa-only] [--source auto|s2|openalex] [--text]
   papers.py paper <ID> [--text]        ID: DOI:10.x/..., ARXIV:2005.11401, S2 paperId, OpenAlex W...
   papers.py fetch <ID> [--out DIR]     오픈 액세스 원문을 파일로 저장하고 경로를 출력한다(원문이 없으면 종료 코드 3)
+  papers.py links <ID> [--limit N]     논문의 GitHub 구현 저장소와 Hugging Face 모델·데이터셋·Space를 찾는다
 
 키(선택): S2_API_KEY, OPENALEX_API_KEY. 환경변수에 없으면 ~/.config/my-claude-skills/secrets.env에서 읽는다.
 표준 라이브러리만 쓴다. 기본 출력은 JSON, --text는 사람이 읽는 목록.
 """
 import argparse
+import http.client
 import html.parser
 import json
+import math
 import os
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
 import time
 import urllib.error
@@ -24,6 +29,7 @@ import urllib.request
 SECRETS = pathlib.Path("~/.config/my-claude-skills/secrets.env").expanduser()
 S2 = "https://api.semanticscholar.org/graph/v1"
 OPENALEX = "https://api.openalex.org"
+HF = "https://huggingface.co"
 S2_FIELDS = "paperId,title,year,venue,authors,citationCount,externalIds,openAccessPdf,url"
 S2_DETAIL_FIELDS = S2_FIELDS + ",abstract,tldr,publicationDate"
 UA = "my-claude-skills/paper-search"
@@ -71,7 +77,8 @@ def http_get(url, headers=None, timeout=30):
             raise RateLimited(url)
         body = e.read()[:300].decode("utf-8", "replace")
         raise (NotFound if e.code == 404 else ApiError)("HTTP %d: %s" % (e.code, body))
-    except (urllib.error.URLError, TimeoutError) as e:
+    # 응답을 읽다가 연결이 끊기는 경우(ConnectionResetError 등)도 OSError로 함께 잡는다.
+    except (urllib.error.URLError, http.client.HTTPException, OSError) as e:
         raise ApiError("요청 실패: %s" % e)
 
 
@@ -335,6 +342,113 @@ def fetch(args):
             "note": "오픈 액세스 원문을 받지 못했다. 근거는 초록뿐임을 밝히고, 필요하면 url을 사용자에게 안내한다"}
 
 
+# --- 구현 코드와 모델 찾기 (links) ---
+
+def github_repos(query, limit):
+    """gh로 GitHub 저장소를 별 개수순으로 찾는다. gh의 로그인 정보를 그대로 쓴다."""
+    if not shutil.which("gh"):
+        raise ApiError("gh가 없습니다")
+    cmd = ["gh", "api", "-X", "GET", "search/repositories", "-f", "q=" + query,
+           "-f", "sort=stars", "-f", "per_page=%d" % limit]
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    except subprocess.TimeoutExpired:
+        raise ApiError("gh 응답 시간 초과")
+    if out.returncode != 0:
+        raise ApiError((out.stderr or out.stdout).strip()[:300])
+    try:
+        data = json.loads(out.stdout)
+    except ValueError:
+        raise ApiError("gh 응답이 JSON이 아니다")
+    repos = [{
+        "name": r.get("full_name"),
+        "url": r.get("html_url"),
+        "stars": r.get("stargazers_count"),
+        "description": r.get("description"),
+        "updated": (r.get("pushed_at") or "")[:10] or None,
+    } for r in data.get("items") or []]
+    return data.get("total_count"), repos
+
+
+def title_words(title):
+    return {w for w in re.findall(r"[a-z0-9]+", (title or "").lower()) if len(w) > 3}
+
+
+def title_match(repo, words):
+    """저장소 이름·설명에 논문 제목 단어가 얼마나 들어 있는지(0~1)."""
+    if not words:
+        return 0.0
+    text = set(re.findall(r"[a-z0-9]+", ("%s %s" % (repo["name"], repo["description"] or "")).lower()))
+    return round(len(words & text) / len(words), 2)
+
+
+def links_github(rec, limit):
+    # README에 arXiv 번호를 적은 저장소에는 공식 구현 말고도 논문을 인용한 목록 저장소가 많다.
+    # 별 개수만으로 고르면 목록 저장소가 위로 오므로, 이름·설명이 제목과 겹치는 저장소를 먼저 둔다.
+    words = title_words(rec.get("title"))
+    queries = []
+    if rec.get("arxiv"):
+        queries.append('"%s" in:readme' % rec["arxiv"])
+    # 제목 단어가 적으면("Deep learning" 등) 관련 없는 저장소만 나와서 제목 검색을 하지 않는다.
+    if len(words) >= 3:
+        queries.append('"%s" in:name,description' % rec["title"])
+    for q in queries:
+        try:
+            # 별 개수 상위 후보를 API 최대치(100)만큼 받아 그 안에서 제목 일치순으로 다시 정렬한다.
+            total, repos = github_repos(q, 100)
+        except ApiError as e:
+            return {"query": q, "total": None, "repos": [], "note": "GitHub 검색 실패: %s" % e}
+        if repos:
+            for r in repos:
+                r["title_match"] = title_match(r, words)
+            # 제목 일치만 보면 별 1~2개짜리 개인 실습 저장소가 위로 오고, 별만 보면 목록 저장소가 온다.
+            repos.sort(key=lambda r: (r["title_match"] * math.log1p(r["stars"] or 0), r["stars"] or 0), reverse=True)
+            return {"query": q, "total": total, "repos": repos[:limit], "note": None}
+    note = "찾은 저장소가 없다" if queries else "arXiv 번호가 없고 제목이 짧아 GitHub를 검색하지 않았다"
+    return {"query": queries[-1] if queries else None, "total": 0, "repos": [], "note": note}
+
+
+def links_hf(rec, limit):
+    if not rec.get("arxiv"):
+        return {"page": None, "note": "arXiv 번호가 없어 Hugging Face 논문 페이지를 찾지 않았다"}
+    try:
+        d = get_json("%s/api/papers/%s" % (HF, rec["arxiv"]))
+    except NotFound:
+        return {"page": None, "note": "Hugging Face에 이 논문 페이지가 없다"}
+    except (ApiError, RateLimited) as e:
+        return {"page": None, "note": "Hugging Face 조회 실패: %s" % e}
+
+    def group(kind, total_key, fields):
+        # id가 없는 항목은 링크로 쓸 수 없어 버린다.
+        items = [i for i in d.get(kind) or [] if isinstance(i, dict) and i.get("id")][:limit]
+        return {"total": d.get(total_key), "items": [{k: i.get(k) for k in fields} for i in items]}
+
+    return {
+        "page": "%s/papers/%s" % (HF, rec["arxiv"]),
+        "github_repo": d.get("githubRepo"),
+        "models": group("linkedModels", "numTotalModels", ("id", "downloads", "likes")),
+        "datasets": group("linkedDatasets", "numTotalDatasets", ("id", "downloads", "likes")),
+        "spaces": group("linkedSpaces", "numTotalSpaces", ("id", "shortDescription")),
+        "note": None,
+    }
+
+
+def links(args):
+    rec = paper(args.id)
+    if not rec.get("arxiv") and args.id.upper().startswith("ARXIV:"):
+        rec["arxiv"] = args.id[6:]
+    # 한쪽 조회가 예상 밖의 응답으로 실패해도 다른 쪽 결과는 내야 하므로 각각 따로 막는다.
+    try:
+        github = links_github(rec, args.limit)
+    except Exception as e:
+        github = {"query": None, "total": None, "repos": [], "note": "GitHub 검색 실패: %s: %s" % (type(e).__name__, e)}
+    try:
+        hf = links_hf(rec, args.limit)
+    except Exception as e:
+        hf = {"page": None, "note": "Hugging Face 조회 실패: %s: %s" % (type(e).__name__, e)}
+    return {"paper": rec, "github": github, "huggingface": hf}
+
+
 def render_text(cmd, data):
     def line(r, i=None):
         head = "%s%s (%s)" % ("%d. " % i if i else "", r.get("title"), r.get("year") or "?")
@@ -356,6 +470,22 @@ def render_text(cmd, data):
         return "\n\n".join(lines)
     if cmd == "paper":
         return line(data) + ("\n\n" + data["abstract"] if data.get("abstract") else "")
+    if cmd == "links":
+        gh, hf = data["github"], data["huggingface"]
+        out = [line(data["paper"]), "[GitHub] 검색식 %s, 총 %s개" % (gh["query"], gh["total"])]
+        out += ["  %s (별 %s, 최근 %s, 제목 일치 %s) %s" % (r["url"], r["stars"], r["updated"], r["title_match"], r["description"] or "") for r in gh["repos"]]
+        if gh.get("note"):
+            out.append("  참고: " + gh["note"])
+        out.append("[Hugging Face] %s" % (hf.get("page") or "-"))
+        if hf.get("github_repo"):
+            out.append("  논문 페이지에 등록된 저장소: %s" % hf["github_repo"])
+        for kind, label in (("models", "모델"), ("datasets", "데이터셋"), ("spaces", "Space")):
+            g = hf.get(kind)
+            if g and g["total"]:
+                out.append("  %s %s개: %s" % (label, g["total"], ", ".join(i["id"] for i in g["items"])))
+        if hf.get("note"):
+            out.append("  참고: " + hf["note"])
+        return "\n".join(out)
     if data["result"] == "ok":
         return "저장: %s (%s, 출처 %s)" % (data["path"], data["format"], data["from"])
     return "원문 없음: %s\n시도: %s" % (data["paper"].get("title"), "; ".join(data["tried"]) or "-")
@@ -376,7 +506,10 @@ def main(argv):
     f = sub.add_parser("fetch")
     f.add_argument("id")
     f.add_argument("--out", default=str(DEFAULT_OUT))
-    for x in (s, p, f):
+    k = sub.add_parser("links")
+    k.add_argument("id")
+    k.add_argument("--limit", type=int, default=5, help="종류별 건수")
+    for x in (s, p, f, k):
         x.add_argument("--text", action="store_true", help="사람이 읽는 형식으로 출력")
     args = ap.parse_args(argv)
     args.limit = max(1, min(getattr(args, "limit", 10), 100))
@@ -386,6 +519,8 @@ def main(argv):
             data = search(args)
         elif args.cmd == "paper":
             data = paper(args.id, args.source)
+        elif args.cmd == "links":
+            data = links(args)
         else:
             data = fetch(args)
     except RateLimited:

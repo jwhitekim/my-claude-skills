@@ -45,7 +45,7 @@ cd my-claude-skills
 | [`codex`](codex/SKILL.md) | Codex 의견 요청·교차 검증·리뷰·문서 초안 작성 |
 | [`gemini-rewrite`](gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
 | [`naver-search`](naver-search/SKILL.md) | 네이버 블로그·뉴스·카페·지식iN·웹문서 검색 |
-| [`paper-search`](paper-search/SKILL.md) | 논문 검색과 오픈 액세스 원문 내려받기 |
+| [`paper-search`](paper-search/SKILL.md) | 논문 검색, 오픈 액세스 원문 내려받기, GitHub 구현·Hugging Face 모델 찾기 |
 | [`readme-writer`](readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 
 전역으로 적용하는 작업 분담 기준은 [팀 운영 정책](team-policy.md)을 참고합니다.

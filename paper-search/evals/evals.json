@@ -1,6 +1,8 @@
 [
   {
-    "skills": ["paper-search"],
+    "skills": [
+      "paper-search"
+    ],
     "query": "RAG 벤치마크 최근 논문 찾아줘",
     "state": "S2_API_KEY 없음, Semantic Scholar가 429를 반환함",
     "expected_behavior": [
@@ -9,7 +11,9 @@
     ]
   },
   {
-    "skills": ["paper-search"],
+    "skills": [
+      "paper-search"
+    ],
     "query": "CRAG 논문에서 PopQA 정확도 몇이었어?",
     "state": "arXiv 2401.15884에 HTML판이 있음",
     "expected_behavior": [
@@ -19,12 +23,26 @@
     ]
   },
   {
-    "skills": ["paper-search"],
+    "skills": [
+      "paper-search"
+    ],
     "query": "이 논문 원문에서 실험 설정 확인해줘 (DOI:10.1038/nature14539)",
     "state": "오픈 액세스 원문이 없음",
     "expected_behavior": [
       "fetch가 종료 코드 3과 no_open_access를 반환한다",
       "원문을 받지 못해 초록만 근거로 할 수 있다고 밝히고 논문 URL을 안내한다"
+    ]
+  },
+  {
+    "skills": [
+      "paper-search"
+    ],
+    "query": "CRAG 논문 공식 코드랑 허깅페이스 모델 찾아줘",
+    "state": "gh에 로그인돼 있음, arXiv 2401.15884",
+    "expected_behavior": [
+      "papers.py links ARXIV:2401.15884를 실행한다",
+      "title_match가 높은 HuskyInSalt/CRAG를 구현 후보로 먼저 보여준다",
+      "공식 여부를 확인하지 못했으면 단정하지 않고 확인 방법을 밝힌다"
     ]
   }
 ]
