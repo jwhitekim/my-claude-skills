@@ -5,7 +5,7 @@
    CLAUDE_CODE_SUBAGENT_MODEL=haiku        직원 기본 모델
    CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1      Agent 도구의 model 옵션과 에이전트 정의의 모델 지정을 무시
    attribution.commit/pr = ""             직원(과 팀장)이 만드는 커밋·PR에 Claude 서명을 붙이지 않는다
-2. ~/.claude/CLAUDE.md 에 policies/team-policy.md 내용을 표시선 블록으로 넣는다.
+2. ~/.claude/CLAUDE.md 에 team-policy.md 내용을 표시선 블록으로 넣는다.
    블록 밖의 내용은 건드리지 않고, 다시 실행하면 블록만 새 내용으로 바꾼다.
 
 사용: python3 team-policy.py <settings.json> <CLAUDE.md> <team-policy.md>

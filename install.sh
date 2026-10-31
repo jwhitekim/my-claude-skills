@@ -67,9 +67,9 @@ command -v python3 >/dev/null 2>&1 || PY_BIN="python"
 "$PY_BIN" "$REPO_DIR/scripts/global-hooks.py" "$HOME/.claude/settings.json"
 
 # 팀장(메인)·직원(하위 에이전트) 운영 방식. 직원 모델을 haiku로 고정하고
-# policies/team-policy.md를 ~/.claude/CLAUDE.md에 표시선 블록으로 넣는다.
+# team-policy.md를 ~/.claude/CLAUDE.md에 표시선 블록으로 넣는다.
 # 되돌리기: python3 scripts/team-policy.py --remove ~/.claude/settings.json ~/.claude/CLAUDE.md
-"$PY_BIN" "$REPO_DIR/scripts/team-policy.py" "$HOME/.claude/settings.json" "$HOME/.claude/CLAUDE.md" "$REPO_DIR/policies/team-policy.md"
+"$PY_BIN" "$REPO_DIR/scripts/team-policy.py" "$HOME/.claude/settings.json" "$HOME/.claude/CLAUDE.md" "$REPO_DIR/team-policy.md"
 
 # agent-browser 스킬이 쓰는 CLI와 전용 Chrome. 실패해도 나머지 설치는 계속한다.
 bash "$(skill_dir_of agent-browser)/scripts/setup.sh" || echo "[agent-browser] 설치 실패 — 나중에 다시 실행하세요"

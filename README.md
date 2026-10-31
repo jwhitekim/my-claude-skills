@@ -46,7 +46,7 @@ cd my-claude-skills
 | [`gemini-rewrite`](gemini-rewrite/SKILL.md) | 의미를 유지하며 한국어 문장 다듬기 |
 | [`readme-writer`](readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
 
-전역으로 적용하는 작업 분담 기준은 [팀 운영 정책](policies/team-policy.md)을 참고합니다.
+전역으로 적용하는 작업 분담 기준은 [팀 운영 정책](team-policy.md)을 참고합니다.
 
 ## 라이선스
 
