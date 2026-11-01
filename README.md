@@ -1,6 +1,6 @@
 # my-claude-skills
 
-저장소 점검, 변경 검증, 문서 작성과 브라우저 작업에 쓰는 개인용 Claude Code 스킬 14개와 전역 훅·운영 정책을 관리하고 설치하는 저장소입니다.
+저장소 점검, 변경 검증, 문서 작성과 브라우저 작업에 쓰는 개인용 Claude Code 스킬 15개와 전역 훅·운영 정책을 관리하고 설치하는 저장소입니다.
 
 ## 시작하기
 
@@ -47,6 +47,7 @@ cd my-claude-skills
 | [`naver-search`](naver-search/SKILL.md) | 네이버 블로그·뉴스·카페·지식iN·웹문서 검색 |
 | [`paper-search`](paper-search/SKILL.md) | 논문 검색, 오픈 액세스 원문 내려받기, GitHub 구현·Hugging Face 모델 찾기 |
 | [`readme-writer`](readme-writer/SKILL.md) | README 작성·축약·양식 정리 |
+| [`seminar-slides`](seminar-slides/SKILL.md) | 연구실 세미나 슬라이드를 마크다운 명세로 쓰고 템플릿 pptx로 만들기 |
 
 전역으로 적용하는 작업 분담 기준은 [팀 운영 정책](team-policy.md)을 참고합니다.
 
