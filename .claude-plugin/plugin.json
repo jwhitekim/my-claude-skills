@@ -1,0 +1,8 @@
+{
+  "name": "jw",
+  "displayName": "JW Toolkit",
+  "description": "저장소 점검, 변경 검증, 배포 확인, 문서 작성, 논문·네이버 검색, Codex·Gemini 연동, 브라우저 작업에 쓰는 개인용 스킬 모음",
+  "author": { "name": "jwhitekim", "url": "https://github.com/jwhitekim" },
+  "homepage": "https://github.com/jwhitekim/my-claude-skills",
+  "repository": "https://github.com/jwhitekim/my-claude-skills"
+}
