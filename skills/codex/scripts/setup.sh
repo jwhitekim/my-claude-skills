@@ -73,5 +73,5 @@ else
   # 방금 nvm으로 설치했다면 호출한 셸의 PATH에는 아직 codex가 없으므로 절대 경로로 안내한다.
   bin="$(command -v codex)"
   echo "[codex] 로그인 필요: $bin login  (브라우저 없는 서버면 $bin login --device-auth)"
-  echo "[codex] Claude Code 안에서는 프롬프트에 '! $bin login --device-auth'를 입력하세요"
+  echo "[codex] Claude Code 안에서는 Claude가 login.sh --device를 백그라운드로 실행해 주소와 코드를 안내합니다"
 fi
