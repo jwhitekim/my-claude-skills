@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Codex 내장 코드 리뷰(codex exec review)를 읽기 전용으로 돌리고 리뷰 결과만 stdout으로 낸다.
 #
-# 사용: review.sh [--uncommitted | --base <브랜치> | --commit <SHA>] [--cd <DIR>] [--effort <LEVEL>] ["<추가 지시>"]
+# 사용: review.sh [--uncommitted | --base <브랜치> | --commit <SHA>] [--cd <DIR>] [--model <NAME>] [--effort <LEVEL>] ["<추가 지시>"]
 #   범위를 안 주면 --uncommitted로 본다. 옵션은 추가 지시보다 앞에 둔다.
 #   리뷰 결과를 두고 더 묻고 싶으면 ask.sh로 새로 묻는다(리뷰 세션은 이어 묻지 않는다).
 set -euo pipefail
@@ -10,6 +10,7 @@ set -euo pipefail
 
 WORKDIR="$PWD"
 EFFORT=""
+MODEL=""
 SCOPE=()
 SCOPE_TEXT=""
 set_scope() {
@@ -27,6 +28,7 @@ while [ $# -gt 0 ]; do
     --commit) set_scope --commit "${2:?--commit에 SHA가 필요합니다}"; SCOPE_TEXT="커밋 $2가 도입한 변경(git show $2)"; shift 2 ;;
     --cd) WORKDIR="${2:?--cd에 디렉터리가 필요합니다}"; shift 2 ;;
     --effort) EFFORT="${2:?--effort에 값이 필요합니다}"; shift 2 ;;
+    --model) MODEL="${2:?--model에 모델 이름이 필요합니다}"; shift 2 ;;
     --) shift; break ;;
     -*) echo "[codex] 알 수 없는 옵션: $1" >&2; exit 1 ;;
     *) break ;;
@@ -47,6 +49,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 OPTS=(-o "$TMP/last.txt" -c 'sandbox_mode="read-only"')
+[ -n "$MODEL" ] && OPTS+=(-m "$MODEL")
 [ -n "$EFFORT" ] && OPTS+=(-c "model_reasoning_effort=\"$EFFORT\"")
 
 cd "$WORKDIR"

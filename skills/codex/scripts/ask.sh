@@ -7,7 +7,8 @@
 #   --add-dir <DIR>  작업 디렉터리 밖에 쓰기를 허용할 디렉터리(반복 가능). --write를 포함한다.
 #   --resume <ID>    이전 세션에 이어서 묻는다. ID는 이전 호출의 stderr에 나온다.
 #   --cd <DIR>       Codex의 작업 디렉터리. 기본은 현재 디렉터리.
-#   --effort <LEVEL> 추론 강도(low|medium|high|xhigh). 기본은 ~/.codex/config.toml 값.
+#   --model <NAME>   사용할 모델. 기본은 ~/.codex/config.toml 값. 고를 수 있는 모델은 models.sh로 본다.
+#   --effort <LEVEL> 추론 강도(low|medium|high|xhigh|max 등, 모델마다 다름). 기본은 config.toml 값.
 set -euo pipefail
 
 . "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
@@ -16,6 +17,7 @@ SANDBOX="read-only"
 RESUME=""
 WORKDIR="$PWD"
 EFFORT=""
+MODEL=""
 ADD_DIRS=()
 
 while [ $# -gt 0 ]; do
@@ -31,6 +33,7 @@ while [ $# -gt 0 ]; do
     --resume) RESUME="${2:?--resume에 세션 ID가 필요합니다}"; shift 2 ;;
     --cd) WORKDIR="${2:?--cd에 디렉터리가 필요합니다}"; shift 2 ;;
     --effort) EFFORT="${2:?--effort에 값이 필요합니다}"; shift 2 ;;
+    --model) MODEL="${2:?--model에 모델 이름이 필요합니다}"; shift 2 ;;
     --) shift; break ;;
     -*) echo "[codex] 알 수 없는 옵션: $1" >&2; exit 1 ;;
     *) break ;;
@@ -57,6 +60,7 @@ trap 'rm -rf "$TMP"' EXIT
 
 # resume에는 -s, --add-dir가 없어 설정값으로 넘긴다. 새 세션도 같은 방식으로 맞춘다.
 OPTS=(--json --skip-git-repo-check -o "$TMP/last.txt" -c "sandbox_mode=\"$SANDBOX\"")
+[ -n "$MODEL" ] && OPTS+=(-m "$MODEL")
 [ -n "$EFFORT" ] && OPTS+=(-c "model_reasoning_effort=\"$EFFORT\"")
 if [ ${#ADD_DIRS[@]} -gt 0 ]; then
   roots=""
